@@ -1,0 +1,35 @@
+Description of the MITHNEOS IRTF Spectra of Asteroids from 2000 to 2021 bundle V1.0 
+=================================================================
+
+Bundle Generation Date: 2023-10-19
+Peer Review: 2023_Asteroid_Review
+Discipline node: Small Bodies Node
+
+
+Content description for the MITHNEOS IRTF Spectra of Asteroids from 2000 to 2021 bundle
+===================================================================
+
+Near-Earth objects (NEOs) have orbits that pass near the Earth and are sourced from the main asteroid belt and beyond, providing an opportunity to study the formation conditions and evolution of the Solar System. The purpose of these data are to spectrally characterize NEOs to understand their compositions, their potential for space mission exploration, and their hazard to Earth. The data provided here are part of a collaborative partnership started in the year 2000 called the MIT-Hawaii Near-Earth Object Spectroscopic Survey (MITHNEOS).
+
+Spectroscopic observations were conducted with the 3-meter IRTF located on Mauna Kea, Hawaii. We used the SpeX NIR spectrograph (Rayner et al. 2003) combined with a 0.8×15 arcsec slit in the low-resolution prism mode to measure the spectra over the 0.65–2.5 micron wavelength range. Series of spectral images were recorded in an AB beam pattern to allow efficient removal of the sky background by subtracting pairs of AB images. Asteroid observations were alternated with measurements of calibration stars known to be very close spectral analogs to the Sun: Hyades 64 and Landolt (1992) stars 93-101, 98-978, 102-1081,105-56, 107-684, 107-998, 110-361, 112- 1333, 113-276 and 115-271. We typically observe three different stars each night to be able to identify possible outlier measurements and to mitigate spectral variability across the observations by computing a mean stellar spectrum from the three measurements. An in-depth analysis of these calibration stars is provided in Marsset et al. (2020).
+
+Data reduction and spectral extraction followed the procedure outlined in Binzel et al. (2019). Reduction of the spectral images was performed with the Image Reduction and Analysis Facility (IRAF) and Interactive Data Language (IDL), using the Autospex software tool to automatically write sets of command files (Rivkin et al. 2005). Reduction steps for the science targets and their corresponding calibration stars included trimming the images, creating a bad pixel map, flat fielding the images, sky subtracting between AB image pairs, tracing the spectra in both the wavelength and spatial dimensions, co-adding the spectral images, extracting the spectra, performing wavelength calibration, and correcting for air mass differences between the asteroids and the corresponding solar analogs.  Data are binned to channel widths of 0.005 µm. The wavelength resolution was purely a choice based on SNR (binning in wavelength space to improve SNR); noting that asteroid spectral features (pyroxene bands; telluric bands) are quite wide compared to 0.005 µm.
+
+The final airmass correction was accomplished using the atmospheric transmission (ATRAN) model by Lord (1992) by determining a coefficient for each object or star that best minimizes atmospheric water absorption effects. Finally, the resulting asteroid spectra were divided by the mean stellar spectra to remove the solar gradient.
+
+Data are normalized to unity at 1.215 µm. For observations made pre-2014, the dichroic was set to 0.8 µm. For observations made post the 2014 SpeX upgrade, the dichroic was set to 0.7 µm. Depending on the weather conditions and brightness of an object, the blue and red ends of the spectrum were clipped so that the first and last points were reliable data with reasonable error bars. This clipping was done manually and subjectively.
+
+In this dataset we provide the 0.65-2.5 µm spectra from our observations. Data for each observed asteroid contains separate columns containing the wavelength range (in µm) with reflectance values and uncertainty for each wavelength. The observational parameters data file contains columns for target number and name, CSV data file name, observing start date/time (UTC), observing completion date/time (UTC), airmass and total exposure time.
+
+These spectra are published in Binzel et al. 2019 and Marsset et al. 2022 where an analysis and discussion of the data can be found.
+
+
+Caveats to the data user
+=================
+
+Uncertainties are calculated using IRAF's apall routine and then the uncertainty in the asteroid and solar analog spectra are summed in quadrature in the final spectrum. It is likely the true uncertainty is larger due to factors such as instrumental effects and weather conditions (e.g. Marsset et al., 2020).
+
+A potential systematic difference in the errors has been noted for data taken pre and post 2014 when the SpeX instrument was upgraded.  No detailed analysis of this difference has been undertaken.  Notable examples of individual spectra with unexpectedly high or low errors include the first spectrum of 38400 and 2015 WH9 have error bars that seem too big. Object 53426 has no error bars (the values are all zero). We  keep the data as they were analyzed and published.
+
+Caution is advised in interpreting any details in the telluric regions of the spectrum near 1.4-1.5 microns and 1.8-2.0 microns.
+

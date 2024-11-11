@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1F00.sch" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<Product_Document xmlns="http://pds.nasa.gov/pds4/pds/v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pds.nasa.gov/pds4/pds/v1 https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1F00.xsd">
+  <Identification_Area>
+    <logical_identifier>urn:nasa:pds:gbo.ast.mithneos.spectra_2000-2021:document:marsset2022_spectra_thumbnails</logical_identifier>
+    <version_id>1.0</version_id>
+    <title>Marsset et al. 2022 Thumbnail Spectra Plots</title>
+    <information_model_version>1.15.0.0</information_model_version>
+    <product_class>Product_Document</product_class>
+    <Citation_Information>
+      <author_list>DeMeo, F.; Marsset, M.; Binzel, R. P.; Burt, B. J.</author_list>
+      <publication_year>2022</publication_year>
+      <description>Thumbnail near-infrared spectral plots of the near-infrared (0.65-2.5 micron) spectra
+of near-Earth objects (NEOs) and Mars crossing asteroids (MCs) as part of the
+MIT-Hawaii Near-Earth Object Spectroscopic Survey (MITHNEOS) published in Marsset et
+al. 2022.</description>
+    </Citation_Information>
+  </Identification_Area>
+  <Document>
+    <document_name>Marsset et al. 2022 Thumbnail Spectra Plots</document_name>
+    <author_list>DeMeo, F.;Marsset, M.;Binzel, R. P.;Burt, B. J.</author_list>
+    <publication_date>2022-04-01</publication_date>
+    <Document_Edition>
+      <edition_name>ADOBE PDF</edition_name>
+      <language>English</language>
+      <files>1</files>
+      <Document_File>
+        <file_name>marsset2022_spectra_thumbnails.pdf</file_name>
+        <document_standard_id>PDF/A</document_standard_id>
+      </Document_File>
+    </Document_Edition>
+  </Document>
+</Product_Document>
+

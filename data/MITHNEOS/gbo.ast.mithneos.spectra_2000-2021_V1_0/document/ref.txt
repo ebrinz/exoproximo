@@ -1,0 +1,38 @@
+Reference List for the MITHNEOS IRTF Spectra of Asteroids from 2000 to 2021 bundle
+==================================================================================
+
+Binzel, R.P., DeMeo, F.E., Turtelboom, E.V., Bus, S.J., Tokunaga, A., Burbine, T.H., Lantz, C., Polishook, D., Carry, B., Morbidelli, A., Birlan, M., Vernazza, P., Burt, B.J., Moskovitz, N., Slivan, S.M., Thomas, C.A., Rivkin, A.S., Hicks, M.D., Dunn, T., Reddy, V., Sanchez, J.A., Granvik, M., Kohout, T., 2019.
+Compositional distributions and evolutionary processes for the near-Earth object population: Results from the MIT-Hawaii Near-Earth Object Spectroscopic Survey (MITH- NEOS). 
+Icarus 324, 41–76. doi:10.1016/j.icarus.2018.12.035
+arXiv: 2004.05090. 
+
+Landolt, A.U. 1992.
+UBVRI Photometric Standard Stars in the Magnitude Range 11.5<V<16.0 Around the Celestial Equator, 
+Astron. J., 104, 340. doi:10.1086/116242
+
+Lord, S., A. 1992.
+A new software tool for computing Earth's atmospheric transmission of near- and far-infrared radiation, 
+NASA Tech. Mem. 103957.
+
+Marsset, M., DeMeo, F.E., Binzel, R.P., Bus, S.J., Burbine, T.H., Burt, B., Moskovitz, N., Polishook, D., Rivkin, A.S., Slivan, S.M., Thomas, C., 2020. 
+Twenty years of spex: Accuracy limits of spectral slope measurements in asteroid spectroscopy.
+Agron. J. 247, 73.  doi:10.3847/1538-4365/ab7b5f,
+arXiv:2004.05158.
+
+Marsset, Michaël, DeMeo, Francesca E., Burt, Brian, Polishook, David, Binzel, Richard P., Granvik, Mikael, Vernazza, Pierre, Carry, Benoit, Bus, Schelte J., Slivan, Stephen M., Thomas, Cristina A., Moskovitz, Nicholas A., Rivkin, Andrew S., 2022. 
+The debiased compositional distribution of mithneos: global match between the near-earth and main-belt asteroid populations, and excess of d-type near-earth objects. 
+Astron. J. 163 (4), 165.doi:10.3847/1538-3881/ac532f
+
+Rayner, J. T., D. W. Toomey, P. M. Onaka, A. J. Denault, W. E. Stahlberger, W. D. Vacca, M. C. Cushing, S. Wang, 2003.
+SpeX: A Medium-Resolution 0.8 - 5.5 micron Spectrograph and Imager for the NASA Infrared Telescope Facility, 
+PASP 115, 362. doi:10.1086/367745. 
+
+Rayner, J.T., P. M. Onaka, M. C. Cushing, and W. D. Vacca, 2004
+Four Years of Good SpeX, 
+in Ground-based Instrumentation for Astronomy, A. F. M. Moorwood and M. Iye, Eds., Proceedings of the SPIE, vol. 5492, pp. 1498-1509. doi:10.1117/12.551107.
+
+Rivkin, A.S., R.P. Binzel, and S.J. Bus 2005
+Constraining near-Earth object albedos using near-infrared spectroscopy, 
+Icarus 175, 175-180. doi: 10.1016/j.icarus.2004.11.005.
+
+

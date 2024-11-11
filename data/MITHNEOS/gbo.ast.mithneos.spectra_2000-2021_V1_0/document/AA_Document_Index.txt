@@ -1,0 +1,25 @@
+Document Collection Contents
+
+The document collection contains documentation files, where available, for 
+this bundle. All document files will have an accompanying label file to 
+describe content and structure.  Label files have the same name as the main 
+document file, with an extension of ".xml".
+
+binzel2019_spectra_thumbnails.pdf - Binzel et al. 2019 Thumbnail Spectra Plots - Thumbnail near-infrared spectral plots of the near-infrared (0.65-2.5 micron) spectra of near-Earth objects (NEOs) and Mars crossing asteroids (MCs) as part of the MIT-Hawaii Near-Earth Object Spectroscopic Survey (MITHNEOS) published in Binzel et al. 2019.
+
+marsset2022_spectra_thumbnails.pdf - Marsset et al. 2022 Thumbnail Spectra Plots - Thumbnail near-infrared spectral plots of the near-infrared (0.65-2.5 micron) spectra of near-Earth objects (NEOs) and Mars crossing asteroids (MCs) as part of the MIT-Hawaii Near-Earth Object Spectroscopic Survey (MITHNEOS) published in Marsset et al. 2022.
+
+bundle_description.txt - Bundle description for the gbo.ast.mithneos.spectra_2000-2021 bundle - A document describing the content and structure of the bundle.
+
+observatory.irtf-maunakea.txt - Description document for Infra Red Telescope Facility-Maunakea - Description document for Infra Red Telescope Facility-Maunakea
+
+irtf-maunakea.3m2.txt - Description for IRTF 3.2m at Infra Red Telescope Facility-Maunakea - Description for IRTF 3.2m at Infra Red Telescope Facility-Maunakea
+
+irtf-maunakea.3m2.spex.txt - Description Document for SpeX - A description of the SpeX instrument
+
+ref.txt - Reference List - The reference list for the bundle.
+
+AA_Document_Index.txt - Document Index - The file you are reading.
+
+collection_gbo.ast.mithneos.spectra_2000-2021_document_inventory.csv - Collection Inventory - An inventory of document products in this collection.
+

@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1F00.sch" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<Product_Observational xmlns="http://pds.nasa.gov/pds4/pds/v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pds.nasa.gov/pds4/pds/v1 https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1F00.xsd">
+  <Identification_Area>
+    <logical_identifier>urn:nasa:pds:gbo.ast.mithneos.spectra_2000-2021:data:observationalparameters_marsset_csv</logical_identifier>
+    <version_id>1.0</version_id>
+    <title>Observational Parameters for Spectral Data from Marsset et al. 2022</title>
+    <information_model_version>1.15.0.0</information_model_version>
+    <product_class>Product_Observational</product_class>
+    <Citation_Information>
+      <editor_list>DeMeo, F.; Marsset, M.; Binzel, B.; Burt, B.</editor_list>
+      <publication_year>2023</publication_year>
+      <description>The observational parameters data file contains columns for target number,
+designation, name, CSV data file name, observing start date/time (UTC), observing
+completion date/time (UTC), exposure count, total exposure time, right ascension,
+declination, airmass, geocentric distance, solar distance, Apparent V magnitude of
+the asteroid at the time of observation as provided by the Minor Planet Center (not a
+measured value), phase angle, and solar analogs used to create the relative
+reflectance spectrum.</description>
+    </Citation_Information>
+  </Identification_Area>
+  <Observation_Area>
+    <Time_Coordinates>
+      <start_date_time>2003-10-16T00:00:00Z</start_date_time>
+      <stop_date_time>2021-02-08T00:00:00Z</stop_date_time>
+    </Time_Coordinates>
+    <Primary_Result_Summary>
+      <purpose>Science</purpose>
+      <processing_level>Derived</processing_level>
+      <Science_Facets>
+        <discipline_name>Spectroscopy</discipline_name>
+        <facet1>Tabulated</facet1>
+      </Science_Facets>
+    </Primary_Result_Summary>
+    <Investigation_Area>
+      <name>None</name>
+      <type>Other Investigation</type>
+      <Internal_Reference>
+        <lid_reference>urn:nasa:pds:context:investigation:individual.none</lid_reference>
+        <reference_type>data_to_investigation</reference_type>
+      </Internal_Reference>
+    </Investigation_Area>
+    <Observing_System>
+      <Observing_System_Component>
+        <name>IRTF 3.2m</name>
+        <type>Telescope</type>
+        <Internal_Reference>
+          <lid_reference>urn:nasa:pds:context:telescope:irtf-maunakea.3m2</lid_reference>
+          <reference_type>is_telescope</reference_type>
+        </Internal_Reference>
+      </Observing_System_Component>
+      <Observing_System_Component>
+        <name>Infra Red Telescope Facility-Maunakea</name>
+        <type>Host</type>
+        <Internal_Reference>
+          <lid_reference>urn:nasa:pds:context:facility:observatory.irtf-maunakea</lid_reference>
+          <reference_type>is_facility</reference_type>
+        </Internal_Reference>
+      </Observing_System_Component>
+      <Observing_System_Component>
+        <name>SpeX</name>
+        <type>Instrument</type>
+        <Internal_Reference>
+          <lid_reference>urn:nasa:pds:context:instrument:irtf-maunakea.3m2.spex</lid_reference>
+          <reference_type>is_instrument</reference_type>
+        </Internal_Reference>
+      </Observing_System_Component>
+    </Observing_System>
+    <Target_Identification>
+      <name>Multiple Asteroids</name>
+      <type>Asteroid</type>
+    </Target_Identification>
+  </Observation_Area>
+  <Reference_List>
+    <External_Reference>
+      <doi>10.3847/1538-3881/ac532f</doi>
+      <reference_text>Marsset, Michaël, DeMeo, Francesca E., Burt, Brian, Polishook, David, Binzel, Richard
+P., Granvik, Mikael, Vernazza, Pierre, Carry, Benoit, Bus, Schelte J., Slivan,
+Stephen M., Thomas, Cristina A., Moskovitz, Nicholas A., Rivkin, Andrew S., 2022. The
+debiased compositional distribution of mithneos: global match between the near-earth
+and main-belt asteroid populations, and excess of d-type near-earth objects. Astron.
+J. 163 (4), 165. http://dx.doi.org/10.3847/1538-3881/ac532f,
+https://ui.adsabs.harvard.edu/abs/2022AJ....163..165M.</reference_text>
+    </External_Reference>
+  </Reference_List>
+  <File_Area_Observational>
+    <File>
+      <file_name>observationalparameters_marsset.csv</file_name>
+      <local_identifier>file</local_identifier>
+      <file_size unit="byte">87517</file_size>
+      <records>491</records>
+    </File>
+    <Table_Delimited>
+      <local_identifier>TABLE</local_identifier>
+      <offset unit="byte">0</offset>
+      <parsing_standard_id>PDS DSV 1</parsing_standard_id>
+      <records>491</records>
+      <record_delimiter>Carriage-Return Line-Feed</record_delimiter>
+      <field_delimiter>Comma</field_delimiter>
+      <Record_Delimited>
+        <fields>16</fields>
+        <groups>0</groups>
+        <Field_Delimited>
+          <name>ASTEROID_NUMBER</name>
+          <data_type>ASCII_Integer</data_type>
+          <description>Number of the asteroid</description>
+          <Special_Constants>
+            <missing_constant>none</missing_constant>
+          </Special_Constants>
+        </Field_Delimited>
+        <Field_Delimited>
+          <name>ASTEROID_DESIGNATION</name>
+          <data_type>UTF8_String</data_type>
+          <description>Provisional designation of the asteroid</description>
+          <Special_Constants>
+            <missing_constant>none</missing_constant>
+          </Special_Constants>
+        </Field_Delimited>
+        <Field_Delimited>
+          <name>ASTEROID_NAME</name>
+          <data_type>UTF8_String</data_type>
+          <description>Name of the asteroid</description>
+          <Special_Constants>
+            <missing_constant>none</missing_constant>
+          </Special_Constants>
+        </Field_Delimited>
+        <Field_Delimited>
+          <name>FILENAME</name>
+          <data_type>UTF8_String</data_type>
+          <description>Path and filename of the spectrum</description>
+          <Special_Constants>
+            <missing_constant>none</missing_constant>
+          </Special_Constants>
+        </Field_Delimited>
+        <Field_Delimited>
+          <name>START_TIME_OBS</name>
+          <data_type>ASCII_Date_Time_YMD</data_type>
+          <description>Start UTC time of observation</description>
+          <Special_Constants>
+            <missing_constant>none</missing_constant>
+          </Special_Constants>
+        </Field_Delimited>
+        <Field_Delimited>
+          <name>STOP_TIME_OBS</name>
+          <data_type>ASCII_Date_Time_YMD</data_type>
+          <description>Stop UTC time of observation</description>
+          <Special_Constants>
+            <missing_constant>none</missing_constant>
+          </Special_Constants>
+        </Field_Delimited>
+        <Field_Delimited>
+          <name>EXPOSURE_COUNT</name>
+          <data_type>ASCII_Integer</data_type>
+          <description>Number of exposures combined to produce the final spectrum. -1 means that data are
+not available.</description>
+          <Special_Constants>
+            <missing_constant>-1</missing_constant>
+          </Special_Constants>
+        </Field_Delimited>
+        <Field_Delimited>
+          <name>TOTAL_INTEGRATION_TIME</name>
+          <data_type>ASCII_Real</data_type>
+          <unit>seconds</unit>
+          <description>Total integration time for the exposures combined to produce the spectrum. -1 means
+that data are not available.</description>
+          <Special_Constants>
+            <missing_constant>-1</missing_constant>
+          </Special_Constants>
+        </Field_Delimited>
+        <Field_Delimited>
+          <name>RIGHT_ASCENSION</name>
+          <data_type>UTF8_String</data_type>
+          <description>Right Ascension at the time of observation. A dash means that data are not available.</description>
+          <Special_Constants>
+            <missing_constant>-</missing_constant>
+          </Special_Constants>
+        </Field_Delimited>
+        <Field_Delimited>
+          <name>DECLINATION</name>
+          <data_type>UTF8_String</data_type>
+          <description>Declination at the time of observation. A dash means that data are not available.</description>
+          <Special_Constants>
+            <missing_constant>-</missing_constant>
+          </Special_Constants>
+        </Field_Delimited>
+        <Field_Delimited>
+          <name>AIRMASS</name>
+          <data_type>ASCII_Real</data_type>
+          <description>Airmass at the time of observation. -1 means that data are not available.</description>
+          <Special_Constants>
+            <missing_constant>-1</missing_constant>
+          </Special_Constants>
+        </Field_Delimited>
+        <Field_Delimited>
+          <name>DISTANCE_GEOCENTRIC</name>
+          <data_type>ASCII_Real</data_type>
+          <unit>AU</unit>
+          <description>Geocentric distance of the asteroid at the time of observation. -1 means that data
+are not available.</description>
+          <Special_Constants>
+            <missing_constant>-1</missing_constant>
+          </Special_Constants>
+        </Field_Delimited>
+        <Field_Delimited>
+          <name>DISTANCE_HELIOCENTRIC</name>
+          <data_type>ASCII_Real</data_type>
+          <unit>AU</unit>
+          <description>Heliocentric distance of the asteroid at the time of observation. -1 means that data
+are not available.</description>
+          <Special_Constants>
+            <missing_constant>-1</missing_constant>
+          </Special_Constants>
+        </Field_Delimited>
+        <Field_Delimited>
+          <name>APPARENT_V_MAG</name>
+          <data_type>ASCII_Real</data_type>
+          <description>Apparent V magnitude of the asteroid at the time of observation as provided by the
+Minor Planet Center (not a measured value). -1 means that data are not available.</description>
+          <Special_Constants>
+            <missing_constant>-1</missing_constant>
+          </Special_Constants>
+        </Field_Delimited>
+        <Field_Delimited>
+          <name>SOLAR_PHASE_ANGLE</name>
+          <data_type>ASCII_Real</data_type>
+          <unit>degree</unit>
+          <description>Phase angle of the asteroid at the time of observation. -1 means that data are not
+available.</description>
+          <Special_Constants>
+            <missing_constant>-1</missing_constant>
+          </Special_Constants>
+        </Field_Delimited>
+        <Field_Delimited>
+          <name>SOLAR_ANALOG_STAR</name>
+          <data_type>UTF8_String</data_type>
+          <description>Name of the solar analog stars used to create the final reflectance spectrum. A dash
+means that data are not available.</description>
+          <Special_Constants>
+            <missing_constant>-</missing_constant>
+          </Special_Constants>
+        </Field_Delimited>
+      </Record_Delimited>
+    </Table_Delimited>
+  </File_Area_Observational>
+</Product_Observational>
+
