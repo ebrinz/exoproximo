@@ -1,6 +1,7 @@
 # Exoproximo
 
-This repository contains a series of Jupyter notebooks for analyzing and classifying near-Earth objects (NEOs) using spectral data, API queries, and machine learning. The primary goal is to gain insights into NEO compositions and behavior, leveraging data from NASA and related sources.
+This repository contains a series of machine learning (ML) and artificial intelligence (AI) exercises using space observation data. Each notebook demonstrates different techniques for analyzing, classifying, and deriving insights from data on near-Earth objects (NEOs) and other celestial bodies. Data sources include NASA and related astronomical databases.
+
 
 ## Notebooks
 
