@@ -13,6 +13,9 @@ This repository contains a series of machine learning (ML) and artificial intell
      - **Normalization and Feature Extraction**:
        - Normalize reflectance data to correct for measurement variations.
        - Calculate spectral slopes and band depths/centers, revealing potential mineral compositions.
+     - **Clustering and Anomaly Detection**
+       - Isolation Forest for anomaly detection.
+       - Principal Component Analysis and K-Means clustering for grouping.
    - **Visualizations**: Displays correlation heatmaps to explore feature relationships and performs anomaly detection.
 
 ### 2. `neo_api_query.ipynb`
@@ -33,3 +36,10 @@ This repository contains a series of machine learning (ML) and artificial intell
        - Cross-validation to ensure robustness and prevent overfitting.
    - **Visualizations**: Feature importance plots and classification reports to evaluate model performance.
 
+*** From repo:
+```
+pipenv --python 3.11
+pipenv install ipykernel==6.28.0 python-dotenv==1.0.0
+pipenv run python -m ipykernel install --user --name="da_$(basename $(pwd))" --display-name="da_$(basename $(pwd))"
+```
+- in notebook, select kernel and python interpreter
