@@ -1,2 +1,19 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+htmlcov/
 .DS_Store
-data/outputs/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Pipeline outputs (regeneratable)
+data/raw/
+outputs/
+
+# uv
+.python-version
