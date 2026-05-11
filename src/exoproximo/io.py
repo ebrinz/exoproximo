@@ -76,3 +76,101 @@ def save_model(model: object, name: str, *, models_dir: Optional[Path] = None) -
 def load_model(name: str, *, models_dir: Optional[Path] = None) -> object:
     in_dir = Path(models_dir) if models_dir is not None else config.MODELS_DIR
     return joblib.load(in_dir / f"{name}.joblib")
+
+
+_SCHEMA = """
+CREATE TABLE IF NOT EXISTS neo_asteroids (
+    designation TEXT PRIMARY KEY,
+    name TEXT,
+    n_observations INTEGER,
+    sources TEXT
+);
+
+CREATE TABLE IF NOT EXISTS neo_spectra_observations (
+    obs_id INTEGER PRIMARY KEY,
+    designation TEXT REFERENCES neo_asteroids(designation),
+    source TEXT,
+    obs_date TEXT,
+    file_path TEXT,
+    n_points INTEGER
+);
+
+CREATE TABLE IF NOT EXISTS neo_spectra_features (
+    obs_id INTEGER PRIMARY KEY REFERENCES neo_spectra_observations(obs_id),
+    designation TEXT REFERENCES neo_asteroids(designation),
+    slope_vis REAL, slope_nir REAL,
+    band_depth_1um REAL, band_center_1um REAL,
+    band_depth_2um REAL, band_center_2um REAL,
+    pc1 REAL, pc2 REAL, pc3 REAL,
+    umap1 REAL, umap2 REAL,
+    hdbscan_label INTEGER, hdbscan_probability REAL,
+    isoforest_score REAL, is_anomaly INTEGER
+);
+
+CREATE TABLE IF NOT EXISTS neo_spectra_points (
+    obs_id INTEGER REFERENCES neo_spectra_observations(obs_id),
+    wavelength REAL, reflectance REAL, error REAL
+);
+CREATE INDEX IF NOT EXISTS idx_neo_points_obs ON neo_spectra_points(obs_id);
+
+CREATE TABLE IF NOT EXISTS neo_orbit_elements (
+    designation TEXT PRIMARY KEY REFERENCES neo_asteroids(designation),
+    a REAL, e REAL, i REAL, om REAL, w REAL, ma REAL,
+    epoch REAL, fetched_at TEXT
+);
+
+CREATE TABLE IF NOT EXISTS neo_physical (
+    designation TEXT PRIMARY KEY REFERENCES neo_asteroids(designation),
+    h_mag REAL, diameter_km REAL, albedo REAL, spec_class TEXT, fetched_at TEXT
+);
+
+CREATE TABLE IF NOT EXISTS neo_close_approaches (
+    ca_id INTEGER PRIMARY KEY,
+    designation TEXT REFERENCES neo_asteroids(designation),
+    body TEXT, ca_date TEXT, dist_au REAL, v_rel_km_s REAL, fetched_at TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_neo_ca_designation ON neo_close_approaches(designation);
+
+CREATE TABLE IF NOT EXISTS neo_ephemerides (
+    designation TEXT REFERENCES neo_asteroids(designation),
+    t TEXT,
+    x_au REAL, y_au REAL, z_au REAL,
+    vx REAL, vy REAL, vz REAL,
+    PRIMARY KEY (designation, t)
+);
+CREATE INDEX IF NOT EXISTS idx_neo_ephem_t ON neo_ephemerides(t);
+
+CREATE TABLE IF NOT EXISTS koi_objects (
+    kepoi_name TEXT PRIMARY KEY,
+    kepler_name TEXT,
+    koi_disposition TEXT,
+    koi_period REAL, koi_duration REAL, koi_depth REAL, koi_prad REAL,
+    koi_teq REAL, koi_insol REAL, koi_model_snr REAL,
+    koi_steff REAL, koi_slogg REAL, koi_srad REAL, koi_smass REAL, koi_smet REAL
+);
+
+CREATE TABLE IF NOT EXISTS koi_predictions (
+    kepoi_name TEXT REFERENCES koi_objects(kepoi_name),
+    model_run_id INTEGER REFERENCES meta_runs(run_id),
+    prob_planet REAL,
+    predicted_label TEXT,
+    PRIMARY KEY (kepoi_name, model_run_id)
+);
+
+CREATE TABLE IF NOT EXISTS meta_runs (
+    run_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    pipeline TEXT,
+    git_sha TEXT,
+    started_at TEXT,
+    finished_at TEXT,
+    status TEXT,
+    n_rows_written INTEGER,
+    params_json TEXT
+);
+"""
+
+
+def init_db(conn: sqlite3.Connection) -> None:
+    """Create all exoproximo tables if they don't exist."""
+    conn.executescript(_SCHEMA)
+    conn.commit()
