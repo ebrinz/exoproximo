@@ -82,3 +82,19 @@ def test_band_returns_nan_when_range_not_covered():
     df = pd.DataFrame({"wavelength": wl, "reflectance": np.ones_like(wl), "error": np.full_like(wl, 0.01)})
     assert np.isnan(spectra.band_depth_1um(df))
     assert np.isnan(spectra.band_center_1um(df))
+
+
+def test_load_spectra_dir_reads_csv_files(tmp_path):
+    src_dir = tmp_path / "src_dir"
+    src_dir.mkdir()
+    # MITHNEOS-style filename: "<asteroid_id>_<obsdate>.csv"
+    (src_dir / "433_20100101.csv").write_text(
+        "0.45,0.95,0.01\n0.55,1.00,0.01\n0.70,1.05,0.01\n1.00,1.10,0.01\n2.00,1.20,0.01\n"
+    )
+    (src_dir / "2062_20150206.csv").write_text(
+        "0.50,0.97,0.01\n0.55,1.00,0.01\n0.80,1.05,0.01\n1.00,1.07,0.01\n2.20,1.18,0.01\n"
+    )
+    df = spectra.load_spectra_dir(src_dir, source="marsset")
+    assert set(df["designation"].unique()) == {"433", "2062"}
+    assert (df["source"] == "marsset").all()
+    assert set(df.columns) >= {"designation", "obs_date", "source", "file_path", "wavelength", "reflectance", "error"}

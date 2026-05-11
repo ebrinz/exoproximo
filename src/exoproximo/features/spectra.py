@@ -91,3 +91,32 @@ def band_depth_2um(df: pd.DataFrame) -> float:
 
 def band_center_2um(df: pd.DataFrame) -> float:
     return _band_features(df, *config.BAND_2UM_RANGE)[1]
+
+
+def load_spectra_dir(dir_path: Path, source: str) -> pd.DataFrame:
+    """Read all *.csv files in dir_path and return one long DataFrame.
+
+    Filename convention: '<designation>_<YYYYMMDD>.csv' with three unnamed columns:
+    wavelength (µm), reflectance, error.
+    """
+    rows = []
+    for csv_path in sorted(Path(dir_path).glob("*.csv")):
+        stem = csv_path.stem
+        if "_" not in stem:
+            continue
+        designation, obs_date_raw = stem.split("_", 1)
+        try:
+            obs_date = pd.to_datetime(obs_date_raw, format="%Y%m%d").date().isoformat()
+        except ValueError:
+            obs_date = None
+        df = pd.read_csv(csv_path, header=None, names=["wavelength", "reflectance", "error"])
+        df["designation"] = designation
+        df["obs_date"] = obs_date
+        df["source"] = source
+        df["file_path"] = str(csv_path)
+        rows.append(df)
+    if not rows:
+        return pd.DataFrame(
+            columns=["designation", "obs_date", "source", "file_path", "wavelength", "reflectance", "error"]
+        )
+    return pd.concat(rows, ignore_index=True)
