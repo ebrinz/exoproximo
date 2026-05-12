@@ -49,9 +49,12 @@ def neo_spectra(
 def neo_orbits(
     cadence_days: int = typer.Option(7, help="Ephemeris cadence in days."),
     window_years: int = typer.Option(10, help="Ephemeris window in years centered on today."),
+    limit: Optional[int] = typer.Option(None, help="Process only the first N designations (smoke testing)."),
 ) -> None:
     """Run the NEO orbits pipeline (SBDB + Horizons ephemerides + close approaches)."""
-    result = neo_orbits_mod.run(cadence_days=cadence_days, window_years=window_years)
+    result = neo_orbits_mod.run(
+        cadence_days=cadence_days, window_years=window_years, limit=limit
+    )
     typer.echo(result)
 
 

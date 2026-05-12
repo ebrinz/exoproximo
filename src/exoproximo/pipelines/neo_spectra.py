@@ -57,6 +57,13 @@ def _per_observation_features(long_df: pd.DataFrame) -> pd.DataFrame:
             "band_depth_2um": fs.band_depth_2um(spec_norm),
             "band_center_2um": fs.band_center_2um(spec_norm),
         })
+    if not rows:
+        return pd.DataFrame(columns=[
+            "designation", "obs_date", "source", "file_path", "n_points",
+            "slope_vis", "slope_nir",
+            "band_depth_1um", "band_center_1um",
+            "band_depth_2um", "band_center_2um",
+        ])
     return pd.DataFrame(rows)
 
 
@@ -83,14 +90,20 @@ def run(
     if feats.empty:
         raise RuntimeError("all observations failed feature extraction")
 
-    X = feats[FEATURE_COLS].to_numpy()
+    from sklearn.preprocessing import StandardScaler
+
+    X_raw = feats[FEATURE_COLS].to_numpy()
+    scaler = StandardScaler().fit(X_raw)
+    X = scaler.transform(X_raw)
 
     log.info("fitting models on %d observations × %d features", *X.shape)
     iso_model, iso_scores, is_anom = anomaly.fit_isolation_forest(X)
     pca_model, pca_coords = cluster.fit_pca(X, n_components=3)
     umap_model, umap_emb = cluster.fit_umap(X)
+    # min_cluster_size scaled to dataset: ~2% of points, bounded [5, 30]
+    mcs = max(5, min(30, len(X) // 50))
     hdb_model, hdb_labels, hdb_probs = cluster.fit_hdbscan(
-        X, min_cluster_size=max(5, len(X) // 10), min_samples=3
+        X, min_cluster_size=mcs, min_samples=3
     )
 
     obs_id = np.arange(1, len(feats) + 1)
@@ -143,6 +156,7 @@ def run(
         io.write_df(points, "neo_spectra_points", conn=conn, mode="append")
         rows_written += len(points)
 
+    io.save_model(scaler, "spectra_scaler")
     io.save_model(pca_model, "spectra_pca")
     io.save_model(umap_model, "spectra_umap")
     io.save_model(hdb_model, "spectra_hdbscan")
@@ -151,7 +165,8 @@ def run(
     params = {
         "n_observations": int(len(feats_out)),
         "features": FEATURE_COLS,
-        "hdbscan": {"min_cluster_size": int(max(5, len(X) // 10)), "min_samples": 3},
+        "scaling": "StandardScaler (fit on training X)",
+        "hdbscan": {"min_cluster_size": int(mcs), "min_samples": 3},
         "umap": {"n_neighbors": 15, "min_dist": 0.1},
         "iso_contamination": "auto",
         "random_state": config.RANDOM_STATE,

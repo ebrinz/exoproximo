@@ -41,6 +41,12 @@ def fetch_koi(
     r = client.get(url)
     r.raise_for_status()
     df = pd.read_csv(stdio.StringIO(r.text))
+    # Force object columns to string. The KOI table includes columns like
+    # `koi_quarters` whose values are 32-character bitmask strings; pyarrow
+    # otherwise tries to infer them as int and overflows C long.
+    obj_cols = df.select_dtypes(include="object").columns
+    if len(obj_cols):
+        df = df.astype({c: "string" for c in obj_cols})
     df.to_parquet(out, index=False)
     log.info("wrote %d rows to %s", len(df), out)
     return out

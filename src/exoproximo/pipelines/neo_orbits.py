@@ -163,6 +163,7 @@ def run(
     *,
     cadence_days: int = DEFAULT_CADENCE_DAYS,
     window_years: int = DEFAULT_WINDOW_YEARS,
+    limit: Optional[int] = None,
 ) -> dict:
     started = dt.datetime.utcnow().isoformat()
     conn = io.get_conn()
@@ -171,6 +172,9 @@ def run(
     if not designations:
         conn.close()
         raise RuntimeError("neo_asteroids is empty. Run `exo neo-spectra` first.")
+    if limit is not None and limit > 0:
+        designations = designations[:limit]
+        log.info("limiting orbits run to first %d designations", limit)
 
     elements_rows, physical_rows, ca_rows, ephem_frames = [], [], [], []
     errors: dict[str, str] = {}

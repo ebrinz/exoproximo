@@ -55,7 +55,10 @@ def write_df(
             f"INSERT INTO {table} ({cols_sql}) VALUES ({placeholders}) "
             f"ON CONFLICT({pk_sql}) DO UPDATE SET {update_sql}"
         )
-        conn.executemany(sql, df.itertuples(index=False, name=None))
+        # sqlite3 can't bind pandas extension scalars (pd.NA, pd.NaT); cast to
+        # object and replace nulls with None.
+        sanitized = df.astype(object).where(pd.notna(df), None)
+        conn.executemany(sql, sanitized.itertuples(index=False, name=None))
         conn.commit()
         return len(df)
     raise ValueError(f"unknown mode: {mode}")
