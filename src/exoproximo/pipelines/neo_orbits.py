@@ -41,7 +41,8 @@ def _fetch_sbdb(designation: str) -> dict:
     """Query JPL SBDB. Returns dict with 'elements' and 'physical' sub-dicts."""
     from astroquery.jplsbdb import SBDB
     raw = SBDB.query(designation, full_precision=True, phys=True)
-    orb = raw.get("orbit", {}).get("elements", {})
+    orbit_raw = raw.get("orbit", {})
+    orb = orbit_raw.get("elements", {})
     phys = raw.get("phys_par", {})
     def _f(k, src):
         v = src.get(k)
@@ -55,7 +56,7 @@ def _fetch_sbdb(designation: str) -> dict:
         "elements": {
             "a": _f("a", orb), "e": _f("e", orb), "i": _f("i", orb),
             "om": _f("om", orb), "w": _f("w", orb), "ma": _f("ma", orb),
-            "epoch": _f("epoch", orb),
+            "epoch": _f("epoch", orbit_raw),
         },
         "physical": {
             "h_mag": _f("H", phys),
