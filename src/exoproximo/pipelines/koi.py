@@ -16,9 +16,11 @@ from exoproximo.ml import classify
 
 log = logging.getLogger(__name__)
 
+COORDS = ["ra", "dec"]
 STELLAR = ["koi_steff", "koi_slogg", "koi_srad", "koi_smass", "koi_smet"]
 TRANSIT = ["koi_period", "koi_duration", "koi_depth", "koi_prad", "koi_teq", "koi_insol", "koi_model_snr"]
 FEATURE_COLS = STELLAR + TRANSIT
+PERSIST_COLS = COORDS + FEATURE_COLS
 
 
 def _git_sha() -> str:
@@ -60,15 +62,15 @@ def run(
 
     df = pd.read_parquet(parquet)
 
-    keep_cols = ["kepoi_name", "kepler_name", "koi_disposition"] + FEATURE_COLS
+    keep_cols = ["kepoi_name", "kepler_name", "koi_disposition"] + PERSIST_COLS
     missing = [c for c in keep_cols if c not in df.columns]
     if missing:
         raise RuntimeError(f"KOI parquet missing columns: {missing}")
     df = df[keep_cols].copy()
 
-    # Median-impute stellar columns; drop rows missing transit columns
+    # Median-impute stellar columns; drop rows missing transit columns or coords
     df[STELLAR] = df[STELLAR].fillna(df[STELLAR].median())
-    df = df.dropna(subset=TRANSIT).reset_index(drop=True)
+    df = df.dropna(subset=TRANSIT + COORDS).reset_index(drop=True)
 
     train_mask = df["koi_disposition"].isin(["CONFIRMED", "FALSE POSITIVE"])
     train_df = df[train_mask].reset_index(drop=True)
@@ -85,7 +87,7 @@ def run(
 
     conn = io.get_conn()
     io.init_db(conn)
-    io.write_df(df[["kepoi_name", "kepler_name", "koi_disposition"] + FEATURE_COLS],
+    io.write_df(df[["kepoi_name", "kepler_name", "koi_disposition"] + PERSIST_COLS],
                 "koi_objects", conn=conn, mode="upsert", pk=["kepoi_name"])
 
     params = {

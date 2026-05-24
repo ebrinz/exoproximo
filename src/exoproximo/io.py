@@ -147,6 +147,7 @@ CREATE TABLE IF NOT EXISTS koi_objects (
     kepoi_name TEXT PRIMARY KEY,
     kepler_name TEXT,
     koi_disposition TEXT,
+    ra REAL, dec REAL,
     koi_period REAL, koi_duration REAL, koi_depth REAL, koi_prad REAL,
     koi_teq REAL, koi_insol REAL, koi_model_snr REAL,
     koi_steff REAL, koi_slogg REAL, koi_srad REAL, koi_smass REAL, koi_smet REAL
@@ -174,6 +175,12 @@ CREATE TABLE IF NOT EXISTS meta_runs (
 
 
 def init_db(conn: sqlite3.Connection) -> None:
-    """Create all exoproximo tables if they don't exist."""
+    """Create all exoproximo tables if they don't exist, and apply additive migrations."""
     conn.executescript(_SCHEMA)
+    # Additive migrations: add columns if missing.
+    cols = {row[1] for row in conn.execute("PRAGMA table_info(koi_objects)").fetchall()}
+    if "ra" not in cols:
+        conn.execute("ALTER TABLE koi_objects ADD COLUMN ra REAL")
+    if "dec" not in cols:
+        conn.execute("ALTER TABLE koi_objects ADD COLUMN dec REAL")
     conn.commit()
