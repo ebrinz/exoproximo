@@ -17,3 +17,9 @@ outputs/
 
 # uv
 .python-version
+
+# UI generated assets
+ui/public/data/
+ui/.next/
+ui/node_modules/
+ui/out/
