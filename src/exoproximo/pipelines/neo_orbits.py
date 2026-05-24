@@ -164,6 +164,7 @@ def run(
     cadence_days: int = DEFAULT_CADENCE_DAYS,
     window_years: int = DEFAULT_WINDOW_YEARS,
     limit: Optional[int] = None,
+    no_ephemerides: bool = False,
 ) -> dict:
     started = dt.datetime.utcnow().isoformat()
     conn = io.get_conn()
@@ -190,12 +191,13 @@ def run(
             errors[des] = f"sbdb: {e}"
             continue
 
-        try:
-            eph = _cached_fetch("ephem", des, _fetch_ephemerides, cadence_days, window_years).copy()
-            eph.insert(0, "designation", des)
-            ephem_frames.append(eph)
-        except Exception as e:
-            errors[des] = errors.get(des, "") + f"; ephem: {e}"
+        if not no_ephemerides:
+            try:
+                eph = _cached_fetch("ephem", des, _fetch_ephemerides, cadence_days, window_years).copy()
+                eph.insert(0, "designation", des)
+                ephem_frames.append(eph)
+            except Exception as e:
+                errors[des] = errors.get(des, "") + f"; ephem: {e}"
 
         try:
             ca = _cached_fetch("ca", des, _fetch_close_approaches).copy()
@@ -233,6 +235,7 @@ def run(
     params = {
         "cadence_days": cadence_days,
         "window_years": window_years,
+        "no_ephemerides": no_ephemerides,
         "errors": errors,
         "request_sleep_s": REQUEST_SLEEP_S,
     }
