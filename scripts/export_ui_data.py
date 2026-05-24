@@ -19,6 +19,14 @@ from exoproximo import config, io  # noqa: E402
 REQUIRED_TABLES = ["neo_asteroids", "neo_orbit_elements", "neo_spectra_features", "koi_objects"]
 GAUSS_K_DEG_PER_DAY = 0.9856076686  # Mean motion of Earth at 1 AU; n = GAUSS_K / sqrt(a^3).
 
+UNIX_EPOCH_JD = 2440587.5
+MS_PER_DAY = 86400000
+
+
+def _jd_now() -> float:
+    """Current time as Julian Day."""
+    return dt.datetime.now(dt.timezone.utc).timestamp() / 86400 + UNIX_EPOCH_JD
+
 
 def _compute_mean_motion(a: float, sbdb_n: Optional[float]) -> float:
     if sbdb_n is not None and sbdb_n > 0:
@@ -49,14 +57,26 @@ def _load_neos(conn) -> list[dict]:
     df = df.drop_duplicates(subset=["designation"], keep="first").reset_index(drop=True)
 
     out = []
+    jd_now = _jd_now()
+    fallback_epoch_count = 0
+    skipped = 0
     for row in df.itertuples(index=False):
+        # Skip if any mandatory orbital element is null
+        required = [row.a, row.e, row.i, row.om, row.w, row.ma]
+        if any(v is None for v in required):
+            skipped += 1
+            continue
+        epoch_val = row.epoch
+        if epoch_val is None:
+            epoch_val = jd_now
+            fallback_epoch_count += 1
         out.append({
             "designation": row.designation,
             "name": row.name,
             "elements": {
                 "a": float(row.a), "e": float(row.e), "i": float(row.i),
                 "om": float(row.om), "w": float(row.w), "ma": float(row.ma),
-                "epoch": float(row.epoch),
+                "epoch": float(epoch_val),
                 "n": _compute_mean_motion(float(row.a), None),
             },
             "physical": (
@@ -76,6 +96,9 @@ def _load_neos(conn) -> list[dict]:
                 "isoforest_score": _f(row.isoforest_score),
             },
         })
+    # Stash diagnostics so _load_meta can include them
+    _load_neos._fallback_epoch_count = fallback_epoch_count  # type: ignore[attr-defined]
+    _load_neos._skipped_count = skipped  # type: ignore[attr-defined]
     return out
 
 
@@ -204,6 +227,8 @@ def _load_meta(conn) -> dict:
         "elements_age_days": elements_age_days,
         "n_neos": n_neos,
         "n_koi": n_koi,
+        "epoch_fallback_count": getattr(_load_neos, "_fallback_epoch_count", 0),
+        "n_neos_skipped": getattr(_load_neos, "_skipped_count", 0),
     }
 
 

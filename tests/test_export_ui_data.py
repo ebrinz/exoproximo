@@ -361,3 +361,135 @@ def test_meta_git_sha_comes_from_orbits_run_even_when_koi_ran_later(tmp_path, mo
     meta = json.loads((out_dir / "meta.json").read_text())
     assert meta["git_sha"] == "orbits1"
     assert meta["last_run_at"] == "2026-05-23T00:00:00"
+
+
+def test_null_epoch_falls_back_to_today_jd(tmp_path, monkeypatch):
+    """A row with null epoch must not crash; export should default to ~today's JD."""
+    import scripts.export_ui_data as exp
+    db_path = tmp_path / "exoproximo.db"
+    monkeypatch.setattr("exoproximo.config.DB_PATH", db_path)
+    conn = io.get_conn(db_path)
+    io.init_db(conn)
+
+    io.write_df(
+        pd.DataFrame({"designation": ["X1"], "name": [None],
+                      "n_observations": [1], "sources": ['["binzel"]']}),
+        "neo_asteroids", conn=conn, mode="upsert", pk=["designation"],
+    )
+    io.write_df(
+        pd.DataFrame({"obs_id": [1], "designation": ["X1"], "source": ["binzel"],
+                      "obs_date": ["2010-01-01"], "file_path": ["x.csv"], "n_points": [1]}),
+        "neo_spectra_observations", conn=conn, mode="append",
+    )
+    io.write_df(
+        pd.DataFrame({
+            "obs_id": [1], "designation": ["X1"],
+            "slope_vis": [0.0], "slope_nir": [0.0],
+            "band_depth_1um": [0.0], "band_center_1um": [1.0],
+            "band_depth_2um": [0.0], "band_center_2um": [2.0],
+            "pc1": [0.0], "pc2": [0.0], "pc3": [0.0],
+            "umap1": [0.0], "umap2": [0.0],
+            "hdbscan_label": [-1], "hdbscan_probability": [0.0],
+            "isoforest_score": [0.0], "is_anomaly": [0],
+        }),
+        "neo_spectra_features", conn=conn, mode="append",
+    )
+    io.write_df(
+        pd.DataFrame({"obs_id": [1], "wavelength": [1.0], "reflectance": [1.0], "error": [0.0]}),
+        "neo_spectra_points", conn=conn, mode="append",
+    )
+    # Null epoch in the DB
+    io.write_df(
+        pd.DataFrame({"designation": ["X1"], "a": [1.5], "e": [0.1], "i": [5.0],
+                      "om": [0.0], "w": [0.0], "ma": [0.0], "epoch": [None],
+                      "fetched_at": ["2026-05-23T00:00:00"]}),
+        "neo_orbit_elements", conn=conn, mode="upsert", pk=["designation"],
+    )
+    io.write_df(
+        pd.DataFrame({"kepoi_name": ["K00001.01"], "kepler_name": [None],
+                      "koi_disposition": ["CONFIRMED"], "ra": [290.0], "dec": [48.0],
+                      "koi_period": [1.0], "koi_duration": [1.0], "koi_depth": [100.0],
+                      "koi_prad": [1.0], "koi_teq": [500.0], "koi_insol": [1.0],
+                      "koi_model_snr": [10.0], "koi_steff": [5500.0], "koi_slogg": [4.5],
+                      "koi_srad": [1.0], "koi_smass": [1.0], "koi_smet": [0.0]}),
+        "koi_objects", conn=conn, mode="upsert", pk=["kepoi_name"],
+    )
+    conn.commit()
+    conn.close()
+
+    out_dir = tmp_path / "out"
+    exp.export(db_path=db_path, out_dir=out_dir)
+
+    neos = json.loads((out_dir / "neos.json").read_text())
+    assert len(neos) == 1
+    # Today's JD is roughly 2461000+; falling back should land in this range.
+    assert neos[0]["elements"]["epoch"] > 2_460_000
+    meta = json.loads((out_dir / "meta.json").read_text())
+    assert meta["epoch_fallback_count"] == 1
+    assert meta["n_neos_skipped"] == 0
+
+
+def test_missing_required_element_skips_row(tmp_path, monkeypatch):
+    """A row with null `a` (semi-major axis) is unusable; skip it."""
+    import scripts.export_ui_data as exp
+    db_path = tmp_path / "exoproximo.db"
+    monkeypatch.setattr("exoproximo.config.DB_PATH", db_path)
+    conn = io.get_conn(db_path)
+    io.init_db(conn)
+    # ... same minimum required fixture as test_null_epoch_falls_back_to_today_jd ...
+    # but with a=NULL
+    io.write_df(
+        pd.DataFrame({"designation": ["BAD"], "name": [None],
+                      "n_observations": [1], "sources": ['["binzel"]']}),
+        "neo_asteroids", conn=conn, mode="upsert", pk=["designation"],
+    )
+    io.write_df(
+        pd.DataFrame({"obs_id": [1], "designation": ["BAD"], "source": ["binzel"],
+                      "obs_date": ["2010-01-01"], "file_path": ["x.csv"], "n_points": [1]}),
+        "neo_spectra_observations", conn=conn, mode="append",
+    )
+    io.write_df(
+        pd.DataFrame({
+            "obs_id": [1], "designation": ["BAD"],
+            "slope_vis": [0.0], "slope_nir": [0.0],
+            "band_depth_1um": [0.0], "band_center_1um": [1.0],
+            "band_depth_2um": [0.0], "band_center_2um": [2.0],
+            "pc1": [0.0], "pc2": [0.0], "pc3": [0.0],
+            "umap1": [0.0], "umap2": [0.0],
+            "hdbscan_label": [-1], "hdbscan_probability": [0.0],
+            "isoforest_score": [0.0], "is_anomaly": [0],
+        }),
+        "neo_spectra_features", conn=conn, mode="append",
+    )
+    io.write_df(
+        pd.DataFrame({"obs_id": [1], "wavelength": [1.0], "reflectance": [1.0], "error": [0.0]}),
+        "neo_spectra_points", conn=conn, mode="append",
+    )
+    # ALL elements null
+    io.write_df(
+        pd.DataFrame({"designation": ["BAD"], "a": [None], "e": [None], "i": [None],
+                      "om": [None], "w": [None], "ma": [None], "epoch": [None],
+                      "fetched_at": ["2026-05-23T00:00:00"]}),
+        "neo_orbit_elements", conn=conn, mode="upsert", pk=["designation"],
+    )
+    io.write_df(
+        pd.DataFrame({"kepoi_name": ["K00001.01"], "kepler_name": [None],
+                      "koi_disposition": ["CONFIRMED"], "ra": [290.0], "dec": [48.0],
+                      "koi_period": [1.0], "koi_duration": [1.0], "koi_depth": [100.0],
+                      "koi_prad": [1.0], "koi_teq": [500.0], "koi_insol": [1.0],
+                      "koi_model_snr": [10.0], "koi_steff": [5500.0], "koi_slogg": [4.5],
+                      "koi_srad": [1.0], "koi_smass": [1.0], "koi_smet": [0.0]}),
+        "koi_objects", conn=conn, mode="upsert", pk=["kepoi_name"],
+    )
+    conn.commit()
+    conn.close()
+
+    out_dir = tmp_path / "out"
+    # _check_required_tables passes because there IS a row in each required table
+    # but _load_neos will skip the only row, so result has 0 NEOs.
+    exp.export(db_path=db_path, out_dir=out_dir)
+
+    neos = json.loads((out_dir / "neos.json").read_text())
+    assert len(neos) == 0
+    meta = json.loads((out_dir / "meta.json").read_text())
+    assert meta["n_neos_skipped"] == 1
