@@ -185,3 +185,179 @@ def test_export_fails_loudly_on_empty_required_table(tmp_path, monkeypatch):
     conn.close()
     with pytest.raises(RuntimeError, match="neo_asteroids"):
         exp.export(db_path=db_path, out_dir=tmp_path / "out")
+
+
+@pytest.fixture
+def multi_obs_db(tmp_path, monkeypatch):
+    """Like small_db but with two observations for designation '100926' to test most-recent picking."""
+    db_path = tmp_path / "exoproximo.db"
+    monkeypatch.setattr("exoproximo.config.DB_PATH", db_path)
+    conn = io.get_conn(db_path)
+    io.init_db(conn)
+
+    io.write_df(
+        pd.DataFrame({
+            "designation": ["100926"], "name": [None],
+            "n_observations": [2], "sources": ['["binzel","marsset"]'],
+        }),
+        "neo_asteroids", conn=conn, mode="upsert", pk=["designation"],
+    )
+    io.write_df(
+        pd.DataFrame({
+            "obs_id": [1, 2],
+            "designation": ["100926", "100926"],
+            "source": ["binzel", "marsset"],
+            "obs_date": ["2010-01-01", "2018-06-15"],   # obs_id=2 is more recent
+            "file_path": ["old.csv", "new.csv"],
+            "n_points": [3, 3],
+        }),
+        "neo_spectra_observations", conn=conn, mode="append",
+    )
+    io.write_df(
+        pd.DataFrame({
+            "obs_id": [1, 2], "designation": ["100926", "100926"],
+            "slope_vis": [0.10, 0.42], "slope_nir": [0.0, -0.04],
+            "band_depth_1um": [0.0, 0.13], "band_center_1um": [1.0, 0.96],
+            "band_depth_2um": [0.0, 0.06], "band_center_2um": [2.0, 2.04],
+            "pc1": [0.0, 0.45], "pc2": [0.0, -0.77], "pc3": [0.0, 1.09],
+            "umap1": [0.0, 2.9], "umap2": [0.0, -1.9],
+            "hdbscan_label": [-1, 1], "hdbscan_probability": [0.0, 1.0],
+            "isoforest_score": [0.0, -0.09], "is_anomaly": [0, 0],
+        }),
+        "neo_spectra_features", conn=conn, mode="append",
+    )
+    # OLD observation has wavelengths 0.5, 0.6, 0.7
+    # NEW observation has wavelengths 1.0, 1.5, 2.0
+    io.write_df(
+        pd.DataFrame({
+            "obs_id":     [1, 1, 1, 2, 2, 2],
+            "wavelength": [0.5, 0.6, 0.7, 1.0, 1.5, 2.0],
+            "reflectance":[1.0, 0.9, 0.8, 1.0, 0.95, 0.85],
+            "error":      [0.01] * 6,
+        }),
+        "neo_spectra_points", conn=conn, mode="append",
+    )
+    io.write_df(
+        pd.DataFrame({
+            "designation": ["100926"],
+            "a": [1.78], "e": [0.41], "i": [24.24],
+            "om": [221.07], "w": [138.81], "ma": [135.12],
+            "epoch": [2460200.5], "fetched_at": ["2026-05-23T00:00:00"],
+        }),
+        "neo_orbit_elements", conn=conn, mode="upsert", pk=["designation"],
+    )
+    io.write_df(
+        pd.DataFrame({
+            "designation": ["100926"],
+            "h_mag": [16.63], "diameter_km": [1.174],
+            "albedo": [0.234], "spec_class": ["S"],
+            "fetched_at": ["2026-05-23T00:00:00"],
+        }),
+        "neo_physical", conn=conn, mode="upsert", pk=["designation"],
+    )
+    io.write_df(
+        pd.DataFrame({
+            "kepoi_name": ["K00001.01"], "kepler_name": [None],
+            "koi_disposition": ["CONFIRMED"],
+            "ra": [290.0], "dec": [48.0],
+            "koi_period": [1.0], "koi_duration": [1.0],
+            "koi_depth": [100.0], "koi_prad": [1.0], "koi_teq": [500.0],
+            "koi_insol": [1.0], "koi_model_snr": [10.0],
+            "koi_steff": [5500.0], "koi_slogg": [4.5], "koi_srad": [1.0],
+            "koi_smass": [1.0], "koi_smet": [0.0],
+        }),
+        "koi_objects", conn=conn, mode="upsert", pk=["kepoi_name"],
+    )
+    conn.execute(
+        "INSERT INTO meta_runs (pipeline, git_sha, started_at, finished_at, status, n_rows_written, params_json) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?)",
+        ("neo_orbits", "abc1234", "2026-05-23T00:00:00", "2026-05-23T00:01:00", "ok", 1, "{}"),
+    )
+    conn.commit()
+    conn.close()
+    return db_path
+
+
+def test_spectra_file_contains_only_most_recent_observation(multi_obs_db, tmp_path):
+    import scripts.export_ui_data as exp
+    out_dir = tmp_path / "out"
+    exp.export(db_path=multi_obs_db, out_dir=out_dir)
+
+    spec = json.loads((out_dir / "spectra" / "100926.json").read_text())
+    wavelengths = sorted(p["wavelength"] for p in spec)
+    # The newer observation (obs_id=2) has wavelengths 1.0, 1.5, 2.0
+    assert wavelengths == [1.0, 1.5, 2.0]
+    assert all(p["wavelength"] >= 1.0 for p in spec)
+
+
+def test_meta_git_sha_comes_from_orbits_run_even_when_koi_ran_later(tmp_path, monkeypatch):
+    """If KOI ran after neo_orbits, meta.git_sha must still come from neo_orbits."""
+    import scripts.export_ui_data as exp
+    db_path = tmp_path / "exoproximo.db"
+    monkeypatch.setattr("exoproximo.config.DB_PATH", db_path)
+    conn = io.get_conn(db_path)
+    io.init_db(conn)
+
+    # Minimum data for required tables
+    io.write_df(
+        pd.DataFrame({"designation": ["100926"], "name": [None],
+                      "n_observations": [1], "sources": ['["binzel"]']}),
+        "neo_asteroids", conn=conn, mode="upsert", pk=["designation"],
+    )
+    io.write_df(
+        pd.DataFrame({"obs_id": [1], "designation": ["100926"], "source": ["binzel"],
+                      "obs_date": ["2010-01-01"], "file_path": ["x.csv"], "n_points": [1]}),
+        "neo_spectra_observations", conn=conn, mode="append",
+    )
+    io.write_df(
+        pd.DataFrame({
+            "obs_id": [1], "designation": ["100926"],
+            "slope_vis": [0.0], "slope_nir": [0.0],
+            "band_depth_1um": [0.0], "band_center_1um": [1.0],
+            "band_depth_2um": [0.0], "band_center_2um": [2.0],
+            "pc1": [0.0], "pc2": [0.0], "pc3": [0.0],
+            "umap1": [0.0], "umap2": [0.0],
+            "hdbscan_label": [-1], "hdbscan_probability": [0.0],
+            "isoforest_score": [0.0], "is_anomaly": [0],
+        }),
+        "neo_spectra_features", conn=conn, mode="append",
+    )
+    io.write_df(
+        pd.DataFrame({"obs_id": [1], "wavelength": [1.0], "reflectance": [1.0], "error": [0.0]}),
+        "neo_spectra_points", conn=conn, mode="append",
+    )
+    io.write_df(
+        pd.DataFrame({"designation": ["100926"], "a": [1.5], "e": [0.1], "i": [5.0],
+                      "om": [0.0], "w": [0.0], "ma": [0.0], "epoch": [2460200.5],
+                      "fetched_at": ["2026-05-23T00:00:00"]}),
+        "neo_orbit_elements", conn=conn, mode="upsert", pk=["designation"],
+    )
+    io.write_df(
+        pd.DataFrame({"kepoi_name": ["K00001.01"], "kepler_name": [None],
+                      "koi_disposition": ["CONFIRMED"], "ra": [290.0], "dec": [48.0],
+                      "koi_period": [1.0], "koi_duration": [1.0], "koi_depth": [100.0],
+                      "koi_prad": [1.0], "koi_teq": [500.0], "koi_insol": [1.0],
+                      "koi_model_snr": [10.0], "koi_steff": [5500.0], "koi_slogg": [4.5],
+                      "koi_srad": [1.0], "koi_smass": [1.0], "koi_smet": [0.0]}),
+        "koi_objects", conn=conn, mode="upsert", pk=["kepoi_name"],
+    )
+    # neo_orbits ran first (run_id=1)
+    conn.execute(
+        "INSERT INTO meta_runs (pipeline, git_sha, started_at, finished_at, status, n_rows_written, params_json) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?)",
+        ("neo_orbits", "orbits1", "2026-05-23T00:00:00", "2026-05-23T00:01:00", "ok", 1, "{}"),
+    )
+    # koi ran second (run_id=2)
+    conn.execute(
+        "INSERT INTO meta_runs (pipeline, git_sha, started_at, finished_at, status, n_rows_written, params_json) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?)",
+        ("koi", "koi9999", "2026-05-23T01:00:00", "2026-05-23T01:01:00", "ok", 1, "{}"),
+    )
+    conn.commit()
+    conn.close()
+
+    out_dir = tmp_path / "out"
+    exp.export(db_path=db_path, out_dir=out_dir)
+    meta = json.loads((out_dir / "meta.json").read_text())
+    assert meta["git_sha"] == "orbits1"
+    assert meta["last_run_at"] == "2026-05-23T00:00:00"

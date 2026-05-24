@@ -140,8 +140,12 @@ def _write_spectra(conn, out_dir: Path) -> int:
             """
             SELECT pts.wavelength, pts.reflectance, pts.error
             FROM neo_spectra_points pts
-            JOIN neo_spectra_observations o ON o.obs_id = pts.obs_id
-            WHERE o.designation = ?
+            WHERE pts.obs_id = (
+                SELECT o2.obs_id FROM neo_spectra_observations o2
+                WHERE o2.designation = ?
+                ORDER BY o2.obs_date DESC NULLS LAST, o2.obs_id DESC
+                LIMIT 1
+            )
             ORDER BY pts.wavelength
             """,
             conn=conn, params=(des,),
@@ -163,9 +167,10 @@ def _load_meta(conn) -> dict:
         "SELECT git_sha, started_at, pipeline FROM meta_runs ORDER BY run_id DESC LIMIT 50",
         conn=conn,
     )
-    latest = runs.iloc[0] if not runs.empty else None
     orbits_run = runs[runs["pipeline"] == "neo_orbits"]
-    elements_started = orbits_run.iloc[0]["started_at"] if not orbits_run.empty else None
+    has_orbits = not orbits_run.empty
+    elements_started = orbits_run.iloc[0]["started_at"] if has_orbits else None
+
     elements_age_days = -1
     if elements_started:
         try:
@@ -177,12 +182,25 @@ def _load_meta(conn) -> dict:
         except Exception:
             elements_age_days = -1
 
+    # Prefer the neo_orbits run for git_sha/last_run_at because that's what
+    # drives positional freshness in the UI. Fall back to any latest run only
+    # if no orbits run exists yet.
+    if has_orbits:
+        git_sha = orbits_run.iloc[0]["git_sha"]
+        last_run_at = orbits_run.iloc[0]["started_at"]
+    elif not runs.empty:
+        git_sha = runs.iloc[0]["git_sha"]
+        last_run_at = runs.iloc[0]["started_at"]
+    else:
+        git_sha = "unknown"
+        last_run_at = None
+
     n_neos = int(io.read_df("SELECT COUNT(*) AS n FROM neo_orbit_elements", conn=conn)["n"].iloc[0])
     n_koi = int(io.read_df("SELECT COUNT(*) AS n FROM koi_objects WHERE ra IS NOT NULL", conn=conn)["n"].iloc[0])
 
     return {
-        "git_sha": latest["git_sha"] if latest is not None else "unknown",
-        "last_run_at": latest["started_at"] if latest is not None else None,
+        "git_sha": git_sha,
+        "last_run_at": last_run_at,
         "elements_age_days": elements_age_days,
         "n_neos": n_neos,
         "n_koi": n_koi,
