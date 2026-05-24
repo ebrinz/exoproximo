@@ -207,7 +207,8 @@ def run(
         except Exception as e:
             errors[des] = errors.get(des, "") + f"; ca: {e}"
 
-        time.sleep(REQUEST_SLEEP_S)
+        if not no_ephemerides:
+            time.sleep(REQUEST_SLEEP_S)
 
     if elements_rows:
         io.write_df(pd.DataFrame(elements_rows), "neo_orbit_elements", conn=conn, mode="upsert", pk=["designation"])
