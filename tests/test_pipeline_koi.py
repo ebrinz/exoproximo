@@ -20,7 +20,10 @@ def test_koi_pipeline_smoke(tmp_outputs):
     runs = io.read_df("SELECT * FROM meta_runs WHERE pipeline='koi'", conn=conn)
     conn.close()
 
-    assert len(objs) == 300
+    expected_n = len(
+        pd.read_parquet(FIXTURE).dropna(subset=koi.TRANSIT + koi.COORDS)
+    )
+    assert len(objs) == expected_n
     # Predictions exist only for CANDIDATE rows (30 of them)
     assert len(preds) == 30
     assert runs.iloc[0]["status"] == "ok"
