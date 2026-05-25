@@ -4,6 +4,7 @@ import { OrbitControls } from "@react-three/drei";
 import { Starfield } from "./Starfield";
 import { Earth } from "./Earth";
 import { EarthOrbit } from "./EarthOrbit";
+import { NeoOrbits } from "./NeoOrbits";
 
 export function Scene() {
   return (
@@ -17,6 +18,7 @@ export function Scene() {
         <meshBasicMaterial color="#fff5a0" />
       </mesh>
       <EarthOrbit />
+      <NeoOrbits />
       <Earth />
       <OrbitControls makeDefault enableDamping dampingFactor={0.08} />
     </Canvas>
