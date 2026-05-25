@@ -41,7 +41,8 @@ def _fetch_sbdb(designation: str) -> dict:
     """Query JPL SBDB. Returns dict with 'elements' and 'physical' sub-dicts."""
     from astroquery.jplsbdb import SBDB
     raw = SBDB.query(designation, full_precision=True, phys=True)
-    orb = raw.get("orbit", {}).get("elements", {})
+    orbit_raw = raw.get("orbit", {})
+    orb = orbit_raw.get("elements", {})
     phys = raw.get("phys_par", {})
     def _f(k, src):
         v = src.get(k)
@@ -55,7 +56,7 @@ def _fetch_sbdb(designation: str) -> dict:
         "elements": {
             "a": _f("a", orb), "e": _f("e", orb), "i": _f("i", orb),
             "om": _f("om", orb), "w": _f("w", orb), "ma": _f("ma", orb),
-            "epoch": _f("epoch", orb),
+            "epoch": _f("epoch", orbit_raw),
         },
         "physical": {
             "h_mag": _f("H", phys),
@@ -164,6 +165,7 @@ def run(
     cadence_days: int = DEFAULT_CADENCE_DAYS,
     window_years: int = DEFAULT_WINDOW_YEARS,
     limit: Optional[int] = None,
+    no_ephemerides: bool = False,
 ) -> dict:
     started = dt.datetime.utcnow().isoformat()
     conn = io.get_conn()
@@ -190,12 +192,13 @@ def run(
             errors[des] = f"sbdb: {e}"
             continue
 
-        try:
-            eph = _cached_fetch("ephem", des, _fetch_ephemerides, cadence_days, window_years).copy()
-            eph.insert(0, "designation", des)
-            ephem_frames.append(eph)
-        except Exception as e:
-            errors[des] = errors.get(des, "") + f"; ephem: {e}"
+        if not no_ephemerides:
+            try:
+                eph = _cached_fetch("ephem", des, _fetch_ephemerides, cadence_days, window_years).copy()
+                eph.insert(0, "designation", des)
+                ephem_frames.append(eph)
+            except Exception as e:
+                errors[des] = errors.get(des, "") + f"; ephem: {e}"
 
         try:
             ca = _cached_fetch("ca", des, _fetch_close_approaches).copy()
@@ -205,7 +208,8 @@ def run(
         except Exception as e:
             errors[des] = errors.get(des, "") + f"; ca: {e}"
 
-        time.sleep(REQUEST_SLEEP_S)
+        if not no_ephemerides:
+            time.sleep(REQUEST_SLEEP_S)
 
     if elements_rows:
         io.write_df(pd.DataFrame(elements_rows), "neo_orbit_elements", conn=conn, mode="upsert", pk=["designation"])
@@ -233,6 +237,7 @@ def run(
     params = {
         "cadence_days": cadence_days,
         "window_years": window_years,
+        "no_ephemerides": no_ephemerides,
         "errors": errors,
         "request_sleep_s": REQUEST_SLEEP_S,
     }

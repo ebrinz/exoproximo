@@ -116,3 +116,28 @@ def test_neo_orbits_pipeline_tolerates_single_failure(seeded_asteroids, monkeypa
     elements = io.read_df("SELECT * FROM neo_orbit_elements", conn=conn)
     conn.close()
     assert len(elements) == 1  # only 1620 succeeded
+
+
+def test_neo_orbits_no_ephemerides_skips_horizons(seeded_asteroids, monkeypatch, tmp_path):
+    monkeypatch.setattr(neo_orbits, "JPL_CACHE_DIR", tmp_path / "jpl_cache")
+    monkeypatch.setattr(neo_orbits, "_fetch_sbdb", _fake_sbdb)
+    monkeypatch.setattr(neo_orbits, "_fetch_close_approaches", _fake_close_approaches)
+
+    def boom(*_a, **_kw):
+        raise AssertionError("_fetch_ephemerides should not be called with no_ephemerides=True")
+    monkeypatch.setattr(neo_orbits, "_fetch_ephemerides", boom)
+
+    result = neo_orbits.run(no_ephemerides=True)
+
+    conn = io.get_conn()
+    elements = io.read_df("SELECT * FROM neo_orbit_elements", conn=conn)
+    physical = io.read_df("SELECT * FROM neo_physical", conn=conn)
+    ca = io.read_df("SELECT * FROM neo_close_approaches", conn=conn)
+    ephem_n = io.read_df("SELECT COUNT(*) AS n FROM neo_ephemerides", conn=conn)
+    conn.close()
+
+    assert len(elements) == 2
+    assert len(physical) == 2
+    assert len(ca) == 2
+    assert ephem_n["n"].iloc[0] == 0
+    assert result["n_designations"] == 2

@@ -43,6 +43,7 @@ packages = ["src/exoproximo"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra -q"
+pythonpath = ["."]
 filterwarnings = [
     "ignore::DeprecationWarning:hdbscan",
     "ignore::DeprecationWarning:umap",
