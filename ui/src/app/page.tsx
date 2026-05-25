@@ -4,6 +4,7 @@ import { SceneBootstrap } from "@/components/belt/SceneBootstrap";
 import { HoverTooltip } from "@/components/belt/HoverTooltip";
 import { TimeScrubber } from "@/components/belt/TimeScrubber";
 import { PlayLoop } from "@/components/belt/PlayLoop";
+import { SelectedPanel } from "@/components/belt/SelectedPanel";
 
 const Scene = dynamic(() => import("@/components/belt/Scene").then((m) => m.Scene), { ssr: false });
 
@@ -13,6 +14,7 @@ export default function BeltPage() {
       <SceneBootstrap>
         <PlayLoop />
         <Scene />
+        <SelectedPanel />
         <HoverTooltip />
         <TimeScrubber />
       </SceneBootstrap>
