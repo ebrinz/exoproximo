@@ -8,6 +8,7 @@ import { NeoOrbits } from "./NeoOrbits";
 import { NeoInstances } from "./NeoInstances";
 import { SelectionHalo } from "./SelectionHalo";
 import { TrajectoryArc } from "./TrajectoryArc";
+import { CameraRig } from "./CameraRig";
 
 export function Scene() {
   return (
@@ -27,6 +28,7 @@ export function Scene() {
       <TrajectoryArc />
       <Earth />
       <OrbitControls makeDefault enableDamping dampingFactor={0.08} />
+      <CameraRig />
     </Canvas>
   );
 }
