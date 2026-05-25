@@ -5,6 +5,7 @@ import { Starfield } from "./Starfield";
 import { Earth } from "./Earth";
 import { EarthOrbit } from "./EarthOrbit";
 import { NeoOrbits } from "./NeoOrbits";
+import { NeoInstances } from "./NeoInstances";
 
 export function Scene() {
   return (
@@ -19,6 +20,7 @@ export function Scene() {
       </mesh>
       <EarthOrbit />
       <NeoOrbits />
+      <NeoInstances />
       <Earth />
       <OrbitControls makeDefault enableDamping dampingFactor={0.08} />
     </Canvas>
