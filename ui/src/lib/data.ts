@@ -2,7 +2,7 @@ import type {
   NeoRecord, KoiRecord, CloseApproachRecord, SpectrumFile, Meta,
 } from "./types";
 
-const BASE = "/data";
+const BASE = `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/data`;
 
 async function fetchJson<T>(url: string): Promise<T> {
   const r = await fetch(url);
