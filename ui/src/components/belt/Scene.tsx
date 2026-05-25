@@ -7,6 +7,7 @@ import { EarthOrbit } from "./EarthOrbit";
 import { NeoOrbits } from "./NeoOrbits";
 import { NeoInstances } from "./NeoInstances";
 import { SelectionHalo } from "./SelectionHalo";
+import { TrajectoryArc } from "./TrajectoryArc";
 
 export function Scene() {
   return (
@@ -23,6 +24,7 @@ export function Scene() {
       <NeoOrbits />
       <NeoInstances />
       <SelectionHalo />
+      <TrajectoryArc />
       <Earth />
       <OrbitControls makeDefault enableDamping dampingFactor={0.08} />
     </Canvas>
