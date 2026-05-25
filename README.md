@@ -60,3 +60,7 @@ The original Jupyter-notebook implementation lives on the `archive/pre-pipeline-
 - **MITHNEOS spectra** — vendored from [PDS Small Bodies Node](https://sbnarchive.psi.edu/pds4/non_mission/gbo.ast.mithneos.spectra_2000-2021_V1_0/)
 - **JPL SBDB / Horizons / CAD** — queried live via `astroquery` and `https://ssd-api.jpl.nasa.gov`
 - **NASA Exoplanet Archive** — KOI cumulative table via TAP
+
+## UI
+
+Static-export Next.js app at `ui/`. See [`ui/README.md`](./ui/README.md).

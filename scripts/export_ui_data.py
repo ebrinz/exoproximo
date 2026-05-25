@@ -84,7 +84,7 @@ def _load_neos(conn) -> list[dict]:
                 if row.h_mag is None and row.diameter_km is None and row.albedo is None and row.spec_class is None
                 else {
                     "h_mag": _f(row.h_mag), "diameter_km": _f(row.diameter_km),
-                    "albedo": _f(row.albedo), "spec_class": row.spec_class,
+                    "albedo": _f(row.albedo), "spec_class": _s(row.spec_class),
                 }
             ),
             "spectral": {
@@ -121,9 +121,9 @@ def _load_koi(conn) -> list[dict]:
     return [
         {
             "kepoi_name": row.kepoi_name,
-            "kepler_name": row.kepler_name,
+            "kepler_name": _s(row.kepler_name),
             "ra": float(row.ra), "dec": float(row.dec),
-            "koi_disposition": row.koi_disposition,
+            "koi_disposition": _s(row.koi_disposition),
             "koi_period": _f(row.koi_period),
             "koi_prad": _f(row.koi_prad),
             "koi_teq": _f(row.koi_teq),
@@ -242,6 +242,19 @@ def _f(v) -> Optional[float]:
     if math.isnan(f):
         return None
     return f
+
+
+def _s(v) -> Optional[str]:
+    """Return a string value, coercing pandas NaN / float sentinels to None."""
+    if v is None:
+        return None
+    try:
+        if math.isnan(float(v)):
+            return None
+    except (TypeError, ValueError):
+        pass
+    s = str(v).strip()
+    return s if s else None
 
 
 def _safe_name(s: str) -> str:
