@@ -1,8 +1,8 @@
 node_modules/
 .next/
 out/
-public/data/
 *.log
+*.tsbuildinfo
 .DS_Store
 playwright-report/
 test-results/
