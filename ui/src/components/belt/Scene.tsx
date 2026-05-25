@@ -2,6 +2,8 @@
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { Starfield } from "./Starfield";
+import { Earth } from "./Earth";
+import { EarthOrbit } from "./EarthOrbit";
 
 export function Scene() {
   return (
@@ -14,6 +16,8 @@ export function Scene() {
         <sphereGeometry args={[0.15, 32, 32]} />
         <meshBasicMaterial color="#fff5a0" />
       </mesh>
+      <EarthOrbit />
+      <Earth />
       <OrbitControls makeDefault enableDamping dampingFactor={0.08} />
     </Canvas>
   );
