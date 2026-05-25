@@ -6,6 +6,7 @@ import { Earth } from "./Earth";
 import { EarthOrbit } from "./EarthOrbit";
 import { NeoOrbits } from "./NeoOrbits";
 import { NeoInstances } from "./NeoInstances";
+import { SelectionHalo } from "./SelectionHalo";
 
 export function Scene() {
   return (
@@ -21,6 +22,7 @@ export function Scene() {
       <EarthOrbit />
       <NeoOrbits />
       <NeoInstances />
+      <SelectionHalo />
       <Earth />
       <OrbitControls makeDefault enableDamping dampingFactor={0.08} />
     </Canvas>
