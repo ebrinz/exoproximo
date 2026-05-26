@@ -21,8 +21,13 @@ export const useKoiStore = create<State>((set) => ({
   openDrawerTab: null,
   select: (selectedKepoi) => set((s) => ({
     selectedKepoi,
-    // On mobile, auto-open to "target" tab when something is selected
-    openDrawerTab: selectedKepoi != null ? "target" : s.openDrawerTab,
+    // On mobile: open the drawer to "target" only when it's currently
+    // CLOSED. If the user is already on TOP or CALIB and clicks a row,
+    // keep them there.
+    openDrawerTab:
+      selectedKepoi != null && s.openDrawerTab === null
+        ? "target"
+        : s.openDrawerTab,
   })),
   hover: (hoverKepoi) => set({ hoverKepoi }),
   setHighlightedBin: (highlightedBin) => set({ highlightedBin }),

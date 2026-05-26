@@ -56,8 +56,14 @@ export const useStore = create<State>((set) => ({
   resetToNow: () => set({ jd: jdNow() }),
   select: (selectedDesignation) => set((s) => ({
     selectedDesignation,
-    // On mobile, auto-open to "target" tab when something is selected
-    openDrawerTab: selectedDesignation != null ? "target" : s.openDrawerTab,
+    // On mobile: open the drawer to "target" only when it's currently
+    // CLOSED. If it's already open on another tab (e.g. MANIFEST while
+    // browsing the ranked list), keep the user there so they can keep
+    // tapping rows without being yanked into DETAIL each time.
+    openDrawerTab:
+      selectedDesignation != null && s.openDrawerTab === null
+        ? "target"
+        : s.openDrawerTab,
   })),
   hover: (hoverDesignation) => set({ hoverDesignation }),
   setData: (data) => set(data),
