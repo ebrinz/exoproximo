@@ -5,10 +5,10 @@ import { SelectedPanelBody } from "./SelectedPanel";
 import { RankingPanelBody } from "./RankingPanel";
 import { TimeScrubberControls } from "./TimeScrubber";
 
-const TABS: { id: BeltDrawerTab; icon: string; label: string }[] = [
-  { id: "target", icon: "🎯", label: "TARGET" },
-  { id: "targets", icon: "⛏", label: "TARGETS" },
-  { id: "time", icon: "⏵", label: "TIME" },
+const TABS: { id: BeltDrawerTab; label: string }[] = [
+  { id: "target", label: "DETAIL" },
+  { id: "targets", label: "MANIFEST" },
+  { id: "time", label: "RATE" },
 ];
 
 export function BeltMobileSheet() {
@@ -27,11 +27,10 @@ export function BeltMobileSheet() {
             <button
               key={t.id}
               onClick={() => setOpenDrawerTab(t.id)}
-              className="flex flex-col items-center gap-0.5 text-dim hover:text-fg transition-colors px-3 py-1"
+              className="flex flex-col items-center gap-0.5 text-dim hover:text-fg transition-colors px-3 py-1.5 border border-rule"
               aria-label={`Open ${t.label} panel`}
             >
-              <span className="text-base leading-none">{t.icon}</span>
-              <span className="text-[9px] tracking-caps">{t.label}</span>
+              <span className="text-[10px] tracking-caps">[{t.label}]</span>
             </button>
           ))}
         </div>
@@ -53,7 +52,6 @@ export function BeltMobileSheet() {
                   : "border-transparent text-dim hover:text-fg"
               }`}
             >
-              <span className="mr-1">{t.icon}</span>
               [{t.label}]
             </button>
           ))}
