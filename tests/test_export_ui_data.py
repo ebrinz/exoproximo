@@ -493,3 +493,81 @@ def test_missing_required_element_skips_row(tmp_path, monkeypatch):
     assert len(neos) == 0
     meta = json.loads((out_dir / "meta.json").read_text())
     assert meta["n_neos_skipped"] == 1
+
+
+def test_neos_includes_summary_and_tags_when_sidecars_present(small_db, tmp_path, monkeypatch):
+    """summary and tags fields are populated when sidecar JSON files exist."""
+    import scripts.export_ui_data as exp
+
+    # Write minimal sidecar files; designations match the small_db fixture ("100926", "10115")
+    tags_data = [
+        {
+            "designation": "100926",
+            "name": None,
+            "metrics": {},
+            "tags": {
+                "composition": "silicate",
+                "composition_confidence": "high",
+                "accessibility": "extreme",
+                "mass_tier": "medium",
+                "anomaly": False,
+            },
+        },
+        {
+            "designation": "10115",
+            "name": "Ariadne",
+            "metrics": {},
+            "tags": {
+                "composition": "silicate",
+                "composition_confidence": "high",
+                "accessibility": "hard",
+                "mass_tier": "medium",
+                "anomaly": True,
+            },
+        },
+    ]
+    blurbs_data = {
+        "100926": "Test blurb for 100926.",
+        "10115": "Test blurb for Ariadne.",
+    }
+
+    # Monkeypatch the path constants in the export script so it reads our tmp files.
+    tags_file = tmp_path / "neo_summary_tags.json"
+    blurbs_file = tmp_path / "neo_summary_blurbs.json"
+    tags_file.write_text(json.dumps(tags_data))
+    blurbs_file.write_text(json.dumps(blurbs_data))
+    monkeypatch.setattr(exp, "_TAGS_PATH", tags_file)
+    monkeypatch.setattr(exp, "_BLURBS_PATH", blurbs_file)
+
+    out_dir = tmp_path / "out"
+    exp.export(db_path=small_db, out_dir=out_dir)
+
+    neos = json.loads((out_dir / "neos.json").read_text())
+    rec_100926 = next(r for r in neos if r["designation"] == "100926")
+    rec_10115 = next(r for r in neos if r["designation"] == "10115")
+
+    assert rec_100926["summary"] == "Test blurb for 100926."
+    assert rec_100926["tags"]["composition"] == "silicate"
+    assert rec_100926["tags"]["anomaly"] is False
+
+    assert rec_10115["summary"] == "Test blurb for Ariadne."
+    assert rec_10115["tags"]["anomaly"] is True
+    assert rec_10115["tags"]["accessibility"] == "hard"
+
+
+def test_neos_handles_missing_sidecars_gracefully(small_db, tmp_path, monkeypatch):
+    """summary and tags are null (not an error) when sidecar files don't exist."""
+    import scripts.export_ui_data as exp
+
+    # Point the script at nonexistent paths.
+    monkeypatch.setattr(exp, "_TAGS_PATH", tmp_path / "does_not_exist_tags.json")
+    monkeypatch.setattr(exp, "_BLURBS_PATH", tmp_path / "does_not_exist_blurbs.json")
+
+    out_dir = tmp_path / "out"
+    exp.export(db_path=small_db, out_dir=out_dir)
+
+    neos = json.loads((out_dir / "neos.json").read_text())
+    assert len(neos) == 2
+    for rec in neos:
+        assert rec["summary"] is None
+        assert rec["tags"] is None

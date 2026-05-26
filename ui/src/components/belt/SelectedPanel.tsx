@@ -2,6 +2,11 @@
 import { useSelectedNeo, useNextCloseApproach, useHohmannForSelected, parseJplDate, daysFromNow } from "@/lib/selectors";
 import { SpectrumChart } from "./SpectrumChart";
 
+function TagChip({ children, variant }: { children: React.ReactNode; variant?: "warn" }) {
+  const color = variant === "warn" ? "border-warn text-warn" : "border-rule text-dim";
+  return <span className={`px-1.5 py-0.5 border text-[10px] ${color}`}>{children}</span>;
+}
+
 /** Shared body — used by both the desktop panel and the mobile sheet tab */
 export function SelectedPanelBody() {
   const sel = useSelectedNeo();
@@ -33,6 +38,24 @@ export function SelectedPanelBody() {
         <span className="ml-2">{phys?.diameter_km != null ? `${phys.diameter_km.toFixed(2)} km` : "size ?"}</span>
         <span className="ml-2 text-dim">albedo</span> {phys?.albedo != null ? phys.albedo.toFixed(2) : "?"}
       </div>
+
+      {(sel.summary || sel.tags) && (
+        <div>
+          <div className="label-caps mb-1">assessment</div>
+          {sel.tags && (
+            <div className="flex flex-wrap gap-1 mb-2">
+              <TagChip>{sel.tags.composition}</TagChip>
+              <TagChip>{sel.tags.composition_confidence} confidence</TagChip>
+              <TagChip>{sel.tags.accessibility} access</TagChip>
+              <TagChip>{sel.tags.mass_tier}</TagChip>
+              {sel.tags.anomaly && <TagChip variant="warn">anomaly</TagChip>}
+            </div>
+          )}
+          {sel.summary && (
+            <p className="text-fg text-[11px] leading-relaxed">{sel.summary}</p>
+          )}
+        </div>
+      )}
 
       <div>
         <div className="label-caps mb-1">spectrum</div>

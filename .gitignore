@@ -14,6 +14,8 @@ dist/
 # Pipeline outputs (regeneratable)
 data/raw/
 outputs/
+!outputs/neo_summary_tags.json
+!outputs/neo_summary_blurbs.json
 
 # uv
 .python-version

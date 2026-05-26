@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import logging
 import math
 import sys
 from pathlib import Path
@@ -15,6 +16,12 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from exoproximo import config, io  # noqa: E402
+
+log = logging.getLogger(__name__)
+
+_OUTPUTS_DIR = Path(__file__).parent.parent / "outputs"
+_TAGS_PATH = _OUTPUTS_DIR / "neo_summary_tags.json"
+_BLURBS_PATH = _OUTPUTS_DIR / "neo_summary_blurbs.json"
 
 REQUIRED_TABLES = ["neo_asteroids", "neo_orbit_elements", "neo_spectra_features", "koi_objects"]
 GAUSS_K_DEG_PER_DAY = 0.9856076686  # Mean motion of Earth at 1 AU; n = GAUSS_K / sqrt(a^3).
@@ -34,7 +41,38 @@ def _compute_mean_motion(a: float, sbdb_n: Optional[float]) -> float:
     return GAUSS_K_DEG_PER_DAY / (a ** 1.5)
 
 
+def _load_sidecar_data():
+    """Load neo_summary_tags.json and neo_summary_blurbs.json.
+
+    Returns (tags_by_des, blurbs) where missing files yield empty dicts and a
+    warning is logged rather than raising an exception.
+    """
+    tags_by_des: dict = {}
+    blurbs: dict = {}
+
+    if _TAGS_PATH.exists():
+        try:
+            records = json.loads(_TAGS_PATH.read_text())
+            tags_by_des = {r["designation"]: r for r in records}
+        except Exception as exc:
+            log.warning("Failed to load %s: %s", _TAGS_PATH, exc)
+    else:
+        log.warning("Sidecar not found: %s — summary tags will be null", _TAGS_PATH)
+
+    if _BLURBS_PATH.exists():
+        try:
+            blurbs = json.loads(_BLURBS_PATH.read_text())
+        except Exception as exc:
+            log.warning("Failed to load %s: %s", _BLURBS_PATH, exc)
+    else:
+        log.warning("Sidecar not found: %s — summary blurbs will be null", _BLURBS_PATH)
+
+    return tags_by_des, blurbs
+
+
 def _load_neos(conn) -> list[dict]:
+    tags_by_des, blurbs = _load_sidecar_data()
+
     query = """
         SELECT a.designation, a.name,
                e.a AS a, e.e AS e, e.i AS i, e.om AS om, e.w AS w, e.ma AS ma, e.epoch AS epoch,
@@ -95,6 +133,8 @@ def _load_neos(conn) -> list[dict]:
                 "hdbscan_label": int(row.hdbscan_label) if row.hdbscan_label is not None else -1,
                 "isoforest_score": _f(row.isoforest_score),
             },
+            "summary": blurbs.get(row.designation),
+            "tags": tags_by_des.get(row.designation, {}).get("tags"),
         })
     # Stash diagnostics so _load_meta can include them
     _load_neos._fallback_epoch_count = fallback_epoch_count  # type: ignore[attr-defined]

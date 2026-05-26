@@ -20,12 +20,22 @@ export type Spectral = {
   isoforest_score: number;
 };
 
+export type NeoTags = {
+  composition: string;
+  composition_confidence: string;
+  accessibility: string;
+  mass_tier: string;
+  anomaly: boolean;
+};
+
 export type NeoRecord = {
   designation: string;
   name: string | null;
   elements: OrbitalElements;
   physical: Physical | null;
   spectral: Spectral;
+  summary: string | null;
+  tags: NeoTags | null;
 };
 
 export type KoiRecord = {
