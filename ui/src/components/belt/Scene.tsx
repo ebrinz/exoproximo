@@ -9,6 +9,7 @@ import { NeoInstances } from "./NeoInstances";
 import { SelectionHalo } from "./SelectionHalo";
 import { TrajectoryArc } from "./TrajectoryArc";
 import { CameraRig } from "./CameraRig";
+import { Sun } from "./Sun";
 
 export function Scene() {
   return (
@@ -17,10 +18,7 @@ export function Scene() {
       <Starfield />
       <ambientLight intensity={0.05} />
       <pointLight position={[0, 0, 0]} intensity={3} color="#fff5a0" />
-      <mesh position={[0, 0, 0]}>
-        <sphereGeometry args={[0.15, 32, 32]} />
-        <meshBasicMaterial color="#fff5a0" />
-      </mesh>
+      <Sun />
       <EarthOrbit />
       <NeoOrbits />
       <NeoInstances />

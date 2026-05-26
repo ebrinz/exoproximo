@@ -71,7 +71,10 @@ export function RankingPanelBody() {
               className={`w-full grid grid-cols-[1fr_28px_44px_44px_44px] gap-x-2 px-3 py-0.5 text-left tabular-nums
                           ${active ? "bg-rule text-accent" : "hover:bg-rule/40"}`}
             >
-              <span className="id-bracket truncate">{n.designation}</span>
+              <span className="truncate">
+                <span className="id-bracket">{n.designation}</span>
+                {n.name && <span className="text-dim ml-1">{n.name}</span>}
+              </span>
               <span style={{ color: `#${specClassColor(cls).toString(16).padStart(6, "0")}` }}>{cls[0] ?? "?"}</span>
               <span>{dv.toFixed(1)}</span>
               <span>{diameter != null ? diameter.toFixed(2) : "—"}</span>
