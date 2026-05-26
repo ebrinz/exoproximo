@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import clsx from "clsx";
 
 const TAGLINES: Record<string, string> = {
-  "/": "Near-Earth Objects · spectral classification and retrieval-Δv assessment for asteroid mining",
+  "/": "667 Near-Earth Objects with MITHNEOS spectra · spectral classification and retrieval-Δv assessment for asteroid mining",
   "/exoplanets": "Kepler Objects of Interest · classifier outputs and habitable-zone search across 9,201 candidates",
 };
 
