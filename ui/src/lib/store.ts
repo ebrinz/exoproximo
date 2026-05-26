@@ -36,8 +36,8 @@ type State = {
 
 export const useStore = create<State>((set) => ({
   jd: jdNow(),
-  playing: false,
-  playSpeed: 1, // 1 day/sec by default
+  playing: true,
+  playSpeed: 30, // 1mo/s by default; the UI starts already animating
   selectedDesignation: null,
   hoverDesignation: null,
   neos: [],
