@@ -22,6 +22,7 @@ log = logging.getLogger(__name__)
 _OUTPUTS_DIR = Path(__file__).parent.parent / "outputs"
 _TAGS_PATH = _OUTPUTS_DIR / "neo_summary_tags.json"
 _BLURBS_PATH = _OUTPUTS_DIR / "neo_summary_blurbs.json"
+_KOI_BLURBS_PATH = _OUTPUTS_DIR / "koi_summary_blurbs.json"
 
 REQUIRED_TABLES = ["neo_asteroids", "neo_orbit_elements", "neo_spectra_features", "koi_objects"]
 GAUSS_K_DEG_PER_DAY = 0.9856076686  # Mean motion of Earth at 1 AU; n = GAUSS_K / sqrt(a^3).
@@ -68,6 +69,22 @@ def _load_sidecar_data():
         log.warning("Sidecar not found: %s — summary blurbs will be null", _BLURBS_PATH)
 
     return tags_by_des, blurbs
+
+
+def _load_koi_blurbs() -> dict:
+    """Load koi_summary_blurbs.json keyed by kepoi_name.
+
+    Returns an empty dict (with a warning) if the file is missing or malformed.
+    """
+    koi_blurbs: dict = {}
+    if _KOI_BLURBS_PATH.exists():
+        try:
+            koi_blurbs = json.loads(_KOI_BLURBS_PATH.read_text())
+        except Exception as exc:
+            log.warning("Failed to load %s: %s", _KOI_BLURBS_PATH, exc)
+    else:
+        log.warning("Sidecar not found: %s — koi summary blurbs will be null", _KOI_BLURBS_PATH)
+    return koi_blurbs
 
 
 def _load_neos(conn) -> list[dict]:
@@ -143,12 +160,14 @@ def _load_neos(conn) -> list[dict]:
 
 
 def _load_koi(conn) -> list[dict]:
+    koi_blurbs = _load_koi_blurbs()
+
     query = """
         WITH latest_run AS (
             SELECT MAX(model_run_id) AS run_id FROM koi_predictions
         )
         SELECT k.kepoi_name, k.kepler_name, k.ra, k.dec, k.koi_disposition,
-               k.koi_period, k.koi_prad, k.koi_teq, k.koi_steff, k.koi_srad,
+               k.koi_period, k.koi_prad, k.koi_teq, k.koi_insol, k.koi_steff, k.koi_srad,
                p.prob_planet
         FROM koi_objects k
         LEFT JOIN koi_predictions p
@@ -158,21 +177,32 @@ def _load_koi(conn) -> list[dict]:
         ORDER BY k.kepoi_name
     """
     df = io.read_df(query, conn=conn)
-    return [
-        {
-            "kepoi_name": row.kepoi_name,
+    rows = []
+    for row in df.itertuples(index=False):
+        kepoi = row.kepoi_name
+        blurb = koi_blurbs.get(kepoi)
+        if blurb is None and kepoi in koi_blurbs:
+            log.warning("KOI blurb found for %s but kepoi_name not in data — skipping", kepoi)
+        rows.append({
+            "kepoi_name": kepoi,
             "kepler_name": _s(row.kepler_name),
             "ra": float(row.ra), "dec": float(row.dec),
             "koi_disposition": _s(row.koi_disposition),
             "koi_period": _f(row.koi_period),
             "koi_prad": _f(row.koi_prad),
             "koi_teq": _f(row.koi_teq),
+            "koi_insol": _f(row.koi_insol),
             "koi_steff": _f(row.koi_steff),
             "koi_srad": _f(row.koi_srad),
             "prob_planet": _f(row.prob_planet),
-        }
-        for row in df.itertuples(index=False)
-    ]
+            "summary": blurb if blurb else None,
+        })
+    # Warn about any blurb kepoi_names that weren't in the dataset
+    koi_names_in_data = {r["kepoi_name"] for r in rows}
+    for kepoi in koi_blurbs:
+        if kepoi not in koi_names_in_data:
+            log.warning("KOI blurb key %s not found in koi_objects — dropping", kepoi)
+    return rows
 
 
 def _load_close_approaches(conn) -> list[dict]:

@@ -16,6 +16,7 @@ data/raw/
 outputs/
 !outputs/neo_summary_tags.json
 !outputs/neo_summary_blurbs.json
+!outputs/koi_summary_blurbs.json
 
 # uv
 .python-version

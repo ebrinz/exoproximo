@@ -571,3 +571,41 @@ def test_neos_handles_missing_sidecars_gracefully(small_db, tmp_path, monkeypatc
     for rec in neos:
         assert rec["summary"] is None
         assert rec["tags"] is None
+
+
+def test_koi_json_includes_summary_when_koi_blurb_sidecar_present(small_db, tmp_path, monkeypatch):
+    """summary field is populated on KOI records when koi_summary_blurbs.json is present."""
+    import scripts.export_ui_data as exp
+
+    # K00752.01 is the KOI in the small_db fixture
+    koi_blurbs = {"K00752.01": "Test KOI blurb for Kepler-227 b."}
+    koi_blurbs_file = tmp_path / "koi_summary_blurbs.json"
+    koi_blurbs_file.write_text(json.dumps(koi_blurbs))
+    monkeypatch.setattr(exp, "_KOI_BLURBS_PATH", koi_blurbs_file)
+
+    out_dir = tmp_path / "out"
+    exp.export(db_path=small_db, out_dir=out_dir)
+
+    koi = json.loads((out_dir / "koi.json").read_text())
+    rec_with_blurb = next(r for r in koi if r["kepoi_name"] == "K00752.01")
+    rec_without_blurb = next(r for r in koi if r["kepoi_name"] == "K00752.02")
+
+    assert rec_with_blurb["summary"] == "Test KOI blurb for Kepler-227 b."
+    assert rec_without_blurb["summary"] is None
+
+
+def test_koi_json_includes_koi_insol(small_db, tmp_path, monkeypatch):
+    """koi_insol field is exported from koi_objects into koi.json."""
+    import scripts.export_ui_data as exp
+
+    # Ensure no blurb sidecar so we don't accidentally depend on it
+    monkeypatch.setattr(exp, "_KOI_BLURBS_PATH", tmp_path / "no_such_file.json")
+
+    out_dir = tmp_path / "out"
+    exp.export(db_path=small_db, out_dir=out_dir)
+
+    koi = json.loads((out_dir / "koi.json").read_text())
+    rec = next(r for r in koi if r["kepoi_name"] == "K00752.01")
+    # small_db fixture sets koi_insol=93.59 for K00752.01
+    assert "koi_insol" in rec
+    assert rec["koi_insol"] == pytest.approx(93.59)

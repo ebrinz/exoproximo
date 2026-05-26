@@ -4,7 +4,7 @@ import { useKoiStore } from "@/lib/koi-store";
 
 /**
  * Thin one-line strip showing the currently selected KOI.
- * Displayed inside the sheet on TOP and CALIB tabs so the user
+ * Displayed inside the sheet on ZONES, PICKS, and CALIB tabs so the user
  * keeps track of their selection when the sky-map is hidden.
  */
 export function KoiSelectedContextStrip() {

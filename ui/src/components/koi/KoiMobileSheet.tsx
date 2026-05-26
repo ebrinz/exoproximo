@@ -4,13 +4,15 @@ import { BottomSheet, haptic } from "@/components/mobile/BottomSheet";
 import { SheetShortcuts } from "@/components/mobile/SheetShortcuts";
 import { KoiSelectedContextStrip } from "./KoiSelectedContextStrip";
 import { SelectedKoiPanelBody } from "./SelectedKoiPanel";
-import { TopCandidatesPanelBody } from "./TopCandidatesPanel";
+import { HabitableZoneScatter } from "./HabitableZoneScatter";
+import { DisagreementTable } from "./DisagreementTable";
 import { ReliabilityDiagram } from "./ReliabilityDiagram";
 
 const TABS: { id: KoiDrawerTab; label: string }[] = [
-  { id: "target",      label: "DETAIL" },
-  { id: "top",         label: "TOP"    },
-  { id: "calibration", label: "CALIB"  },
+  { id: "target", label: "DETAIL" },
+  { id: "zones",  label: "ZONES"  },
+  { id: "picks",  label: "PICKS"  },
+  { id: "calib",  label: "CALIB"  },
 ];
 
 export function KoiMobileSheet() {
@@ -58,16 +60,17 @@ export function KoiMobileSheet() {
           ))}
         </div>
 
-        {/* Context strip (TOP + CALIB — DETAIL already shows selection) */}
-        {(openDrawerTab === "top" || openDrawerTab === "calibration") && (
+        {/* Context strip on ZONES, PICKS, CALIB — DETAIL already shows selection */}
+        {(openDrawerTab === "zones" || openDrawerTab === "picks" || openDrawerTab === "calib") && (
           <KoiSelectedContextStrip />
         )}
 
         {/* Tab content — key forces re-mount on switch to restart fade animation */}
         <div key={openDrawerTab ?? "none"} className="sheet-tab-content h-[calc(100%-2.5rem)] overflow-hidden">
           {openDrawerTab === "target" && <SelectedKoiPanelBody />}
-          {openDrawerTab === "top"    && <TopCandidatesPanelBody />}
-          {openDrawerTab === "calibration" && (
+          {openDrawerTab === "zones"  && <HabitableZoneScatter />}
+          {openDrawerTab === "picks"  && <DisagreementTable />}
+          {openDrawerTab === "calib"  && (
             <div className="p-3 overflow-y-auto h-full">
               <ReliabilityDiagram />
             </div>

@@ -1,7 +1,7 @@
 "use client";
 import { create } from "zustand";
 
-export type KoiDrawerTab = "target" | "top" | "calibration";
+export type KoiDrawerTab = "target" | "zones" | "picks" | "calib";
 
 type State = {
   selectedKepoi: string | null;

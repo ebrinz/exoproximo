@@ -46,9 +46,11 @@ export type KoiRecord = {
   koi_period: number | null;
   koi_prad: number | null;
   koi_teq: number | null;
+  koi_insol: number | null;
   koi_steff: number | null;
   koi_srad: number | null;
   prob_planet: number | null;
+  summary?: string | null;
 };
 
 export type CloseApproachRecord = {

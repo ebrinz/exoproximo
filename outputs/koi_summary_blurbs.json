@@ -1,0 +1,14 @@
+{
+  "K00087.01": "Kepler-22 b — first confirmed exoplanet found in the habitable zone of a Sun-like star (2011). ~2.4 R⊕, equilibrium temp ~290 K, 290-day orbit around a G5V dwarf. The textbook 'super-Earth in habitable zone' discovery.",
+  "K00571.05": "Kepler-186 f — first Earth-sized planet discovered in the habitable zone of another star (2014). ~1.17 R⊕ around a cool red dwarf, 130-day orbit. First definitive proof that Earth-sized worlds exist where liquid water could pool.",
+  "K07016.01": "Kepler-452 b — 'Earth's cousin' announced 2015: ~1.6 R⊕ in the habitable zone of a Sun-like G2V star. The closest match to Earth's combination of size, host type, and insolation Kepler found.",
+  "K00701.04": "Kepler-62 f — possibly rocky super-Earth in the habitable zone of a K-type star. One of the strongest candidates for liquid surface water at 1.4 R⊕.",
+  "K03138.02": "Kepler-1649 c — Earth-sized rocky planet in the habitable zone of an M-dwarf. Discovered in 2020 from re-analysis of archived Kepler data after the original pipeline misclassified it.",
+  "K00351.01": "Kepler-90 i — member of the first known 8-planet system (matching our solar system's count), found in 2017 by a neural network sifting Kepler light curves.",
+  "K00072.01": "Kepler-20 b — first Earth-sized exoplanet discovered (2011) — but a scorching ~1000 K hot Earth, not habitable. Same star hosts five other planets.",
+  "K01270.01": "Kepler-138 b — Mars-sized world (~0.5 R⊕), one of the smallest exoplanets with a measured mass. Demonstrated Kepler's reach down to sub-Earth bodies.",
+  "K02124.01": "Kepler-444 b — member of the oldest known planetary system at ~11.2 Gyr, predating most of the galaxy. Five sub-Earth planets around a K-dwarf.",
+  "K00011.01": "Kepler-7 b — early Kepler discovery; an inflated hot Jupiter that became the first exoplanet to have its cloud cover mapped from variation in reflected light.",
+  "K00148.01": "Kepler-79 d (\"Mystic\") — a low-density 'super-puff' world, less dense than cotton candy. Demonstrated Kepler could find planet families with extreme bulk properties.",
+  "K02626.01": "Kepler-1229 b — Earth-sized planet in the habitable zone of a red dwarf; faint host means temperatures depend strongly on atmospheric composition."
+}
