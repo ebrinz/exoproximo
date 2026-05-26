@@ -25,9 +25,15 @@ export function CameraRig() {
     const jd = useStore.getState().jd;
     const [tx, ty, tz] = heliocentricCartesian(target.elements, jd);
     const tv = new THREE.Vector3(tx, tz, -ty);
-    // viewpoint: pull camera toward target but stay above the ecliptic
-    const dir = tv.clone().normalize().multiplyScalar(1.6);
-    const desired = tv.clone().add(dir).add(new THREE.Vector3(0, 1.2, 0));
+    // Frame the selected orbit: stay back at a distance that scales with
+    // aphelion so the whole orbit ellipse is comfortably in view. Camera
+    // sits in the direction of the target (so the target is in frame),
+    // lifted above the ecliptic, looking back at the origin (Sun).
+    const targetA = target.elements.a;
+    const aphelion = targetA * (1 + target.elements.e);
+    const cameraDistance = Math.max(7, 2.6 * aphelion);
+    const dir = tv.clone().normalize();
+    const desired = dir.multiplyScalar(cameraDistance).add(new THREE.Vector3(0, cameraDistance * 0.35, 0));
     fromPos.current.copy(camera.position);
     toPos.current.copy(desired);
     startedAt.current = performance.now();
