@@ -9,7 +9,7 @@ export function BottomHud() {
     meta.elements_age_days === 0 ? "(today)" :
     `(${meta.elements_age_days}d ago)`;
   return (
-    <div className="fixed bottom-1 left-0 right-0 z-40 px-5 text-[10px] text-dim flex justify-between pointer-events-none">
+    <div className="fixed bottom-1 left-0 right-0 z-40 px-5 text-[10px] text-dim hidden md:flex justify-between pointer-events-none">
       <span>
         last run: {meta.last_run_at?.slice(0, 10) ?? "—"} {ageLabel}
         <span className="mx-1">·</span>

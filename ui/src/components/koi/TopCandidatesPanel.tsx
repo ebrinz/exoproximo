@@ -3,7 +3,8 @@ import { useMemo } from "react";
 import { useStore } from "@/lib/store";
 import { useKoiStore } from "@/lib/koi-store";
 
-export function TopCandidatesPanel() {
+/** Shared body — used by both desktop sidebar and mobile sheet tab */
+export function TopCandidatesPanelBody() {
   const koi = useStore((s) => s.koi);
   const select = useKoiStore((s) => s.select);
   const selectedKepoi = useKoiStore((s) => s.selectedKepoi);
@@ -16,11 +17,11 @@ export function TopCandidatesPanel() {
   }, [koi]);
 
   return (
-    <div className="panel text-xs flex flex-col" style={{ maxHeight: 360 }}>
-      <div className="p-3 border-b border-rule">
+    <div className="text-xs flex flex-col h-full">
+      <div className="p-3 border-b border-rule flex-shrink-0">
         <div className="label-caps">top candidates · prob_planet ↓</div>
       </div>
-      <div className="overflow-y-auto">
+      <div className="overflow-y-auto flex-1">
         {rows.map((r) => {
           const active = r.kepoi_name === selectedKepoi;
           return (
@@ -36,6 +37,15 @@ export function TopCandidatesPanel() {
           );
         })}
       </div>
+    </div>
+  );
+}
+
+/** Desktop sidebar panel — wraps with panel class + max height */
+export function TopCandidatesPanel() {
+  return (
+    <div className="panel flex flex-col" style={{ maxHeight: 360 }}>
+      <TopCandidatesPanelBody />
     </div>
   );
 }

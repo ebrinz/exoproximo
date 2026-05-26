@@ -17,11 +17,12 @@ export function TopNav() {
     </Link>
   );
   return (
-    <div className="fixed top-3 left-0 right-0 z-40 flex justify-between px-5 pointer-events-none">
+    <div className="fixed top-3 left-0 right-0 z-40 flex justify-between px-3 md:px-5 pointer-events-none">
       <div className="pointer-events-auto text-[12px] text-dim">
-        <span className="text-fg">EXOPROXIMO</span>
-        <span className="mx-1">·</span>
-        v0.3
+        <span className="text-fg hidden sm:inline">EXOPROXIMO</span>
+        <span className="mx-1 hidden sm:inline">·</span>
+        <span className="text-fg sm:hidden">EXO</span>
+        <span className="text-[10px]">v0.3</span>
       </div>
       <div className="pointer-events-auto flex gap-2">
         {tab("/", "BELT")}

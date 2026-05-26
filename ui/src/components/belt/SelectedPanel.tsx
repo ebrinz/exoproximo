@@ -2,23 +2,24 @@
 import { useSelectedNeo, useNextCloseApproach, useHohmannForSelected, parseJplDate, daysFromNow } from "@/lib/selectors";
 import { SpectrumChart } from "./SpectrumChart";
 
-export function SelectedPanel() {
+/** Shared body — used by both the desktop panel and the mobile sheet tab */
+export function SelectedPanelBody() {
   const sel = useSelectedNeo();
   const ca = useNextCloseApproach(sel?.designation ?? null);
   const hoh = useHohmannForSelected();
 
   if (!sel) {
     return (
-      <aside className="fixed top-20 left-6 w-[360px] panel p-4">
+      <div className="p-4">
         <div className="label-caps mb-2">selected asteroid</div>
         <div className="text-dim">── select a target ──</div>
-      </aside>
+      </div>
     );
   }
 
   const phys = sel.physical;
   return (
-    <aside className="fixed top-20 left-6 w-[360px] panel p-4 text-xs space-y-3">
+    <div className="p-4 text-xs space-y-3 overflow-y-auto h-full">
       <div>
         <div className="label-caps">selected asteroid</div>
         <div className="text-fg text-sm mt-1">
@@ -87,6 +88,15 @@ export function SelectedPanel() {
           </div>
         ) : <span className="text-dim">none in CAD window</span>}
       </div>
+    </div>
+  );
+}
+
+/** Desktop fixed-position panel — hidden on mobile */
+export function SelectedPanel() {
+  return (
+    <aside className="fixed top-20 left-6 w-[360px] panel hidden md:block">
+      <SelectedPanelBody />
     </aside>
   );
 }

@@ -11,10 +11,15 @@ const MIN_SCALE = 0.012;
 const MAX_SCALE = 0.07;
 const SIZE_MULT = 0.022;
 
+// Detect touch/coarse-pointer devices at module load (stable — no resize needed)
+const IS_TOUCH = typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches;
+// Bump hit area on touch devices so fingers can select asteroids more easily
+const TOUCH_SCALE_MULT = IS_TOUCH ? 1.5 : 1.0;
+
 function scaleFor(diameter: number | null | undefined): number {
   const d = diameter ?? 0.2;
   const s = Math.log10(d + 0.1) * SIZE_MULT + 0.018;
-  return Math.max(MIN_SCALE, Math.min(MAX_SCALE, s));
+  return Math.max(MIN_SCALE, Math.min(MAX_SCALE, s)) * TOUCH_SCALE_MULT;
 }
 
 export function NeoInstances() {

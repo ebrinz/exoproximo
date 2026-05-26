@@ -7,6 +7,7 @@ import { PlayLoop } from "@/components/belt/PlayLoop";
 import { SelectedPanel } from "@/components/belt/SelectedPanel";
 import { RankingPanel } from "@/components/belt/RankingPanel";
 import { HashSelector } from "@/components/belt/HashSelector";
+import { BeltMobileSheet } from "@/components/belt/BeltMobileSheet";
 
 const Scene = dynamic(() => import("@/components/belt/Scene").then((m) => m.Scene), { ssr: false });
 
@@ -21,6 +22,7 @@ export default function BeltPage() {
         <RankingPanel />
         <HoverTooltip />
         <TimeScrubber />
+        <BeltMobileSheet />
       </SceneBootstrap>
     </main>
   );

@@ -9,14 +9,15 @@ function dispChip(d: string) {
   return <span className={`px-1.5 py-0.5 border ${color}`}>{d}</span>;
 }
 
-export function SelectedKoiPanel() {
+/** Shared body — used by both desktop sidebar and mobile sheet tab */
+export function SelectedKoiPanelBody() {
   const koi = useStore((s) => s.koi);
   const selectedKepoi = useKoiStore((s) => s.selectedKepoi);
   const rec = koi.find((k) => k.kepoi_name === selectedKepoi);
 
   if (!rec) {
     return (
-      <div className="panel p-4">
+      <div className="p-4">
         <div className="label-caps mb-2">selected koi</div>
         <div className="text-dim">── select a candidate ──</div>
       </div>
@@ -24,7 +25,7 @@ export function SelectedKoiPanel() {
   }
 
   return (
-    <div className="panel p-4 text-xs space-y-2">
+    <div className="p-4 text-xs space-y-2 overflow-y-auto h-full">
       <div className="label-caps">selected koi</div>
       <div className="text-fg">
         <span className="id-bracket text-accent">{rec.kepoi_name}</span>
@@ -44,6 +45,15 @@ export function SelectedKoiPanel() {
           <span className="text-accent text-base">p = {rec.prob_planet.toFixed(3)}</span>
         ) : <span className="text-dim">(not classified)</span>}
       </div>
+    </div>
+  );
+}
+
+/** Desktop sidebar panel — wraps with panel class */
+export function SelectedKoiPanel() {
+  return (
+    <div className="panel">
+      <SelectedKoiPanelBody />
     </div>
   );
 }

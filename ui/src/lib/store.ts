@@ -3,6 +3,8 @@ import { create } from "zustand";
 import { jdNow } from "./time";
 import type { NeoRecord, KoiRecord, Meta, CloseApproachRecord } from "./types";
 
+export type BeltDrawerTab = "target" | "targets" | "time";
+
 type State = {
   jd: number;
   playing: boolean;
@@ -14,6 +16,7 @@ type State = {
   closeApproaches: CloseApproachRecord[];
   meta: Meta | null;
   loadError: string | null;
+  openDrawerTab: BeltDrawerTab | null;
 
   setJd: (jd: number) => void;
   setPlaying: (p: boolean) => void;
@@ -28,6 +31,7 @@ type State = {
     meta: Meta;
   }) => void;
   setLoadError: (err: string | null) => void;
+  setOpenDrawerTab: (tab: BeltDrawerTab | null) => void;
 };
 
 export const useStore = create<State>((set) => ({
@@ -41,13 +45,19 @@ export const useStore = create<State>((set) => ({
   closeApproaches: [],
   meta: null,
   loadError: null,
+  openDrawerTab: null,
 
   setJd: (jd) => set({ jd }),
   setPlaying: (playing) => set({ playing }),
   setPlaySpeed: (playSpeed) => set({ playSpeed }),
   resetToNow: () => set({ jd: jdNow() }),
-  select: (selectedDesignation) => set({ selectedDesignation }),
+  select: (selectedDesignation) => set((s) => ({
+    selectedDesignation,
+    // On mobile, auto-open to "target" tab when something is selected
+    openDrawerTab: selectedDesignation != null ? "target" : s.openDrawerTab,
+  })),
   hover: (hoverDesignation) => set({ hoverDesignation }),
   setData: (data) => set(data),
   setLoadError: (loadError) => set({ loadError }),
+  setOpenDrawerTab: (openDrawerTab) => set({ openDrawerTab }),
 }));

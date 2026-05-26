@@ -21,7 +21,7 @@ export function HoverTooltip() {
 
   return (
     <div
-      className="pointer-events-none fixed z-50 panel px-2 py-1 text-xs whitespace-nowrap"
+      className="pointer-events-none fixed z-50 panel px-2 py-1 text-xs whitespace-nowrap hidden md:block"
       style={{ left: pos.x, top: pos.y }}
     >
       <span className="id-bracket">{rec.designation}</span>

@@ -7,7 +7,20 @@ import { specClassColor } from "@/lib/spec-class";
 
 type SortKey = "score" | "dv" | "diameter" | "class";
 
-export function RankingPanel() {
+function Header({ label, onClick, active }: { label: string; onClick?: () => void; active?: boolean }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`text-left ${active ? "text-accent" : "text-dim"} ${onClick ? "hover:text-fg" : ""}`}
+      disabled={!onClick}
+    >
+      {label}
+    </button>
+  );
+}
+
+/** Shared body — used by both the desktop panel and the mobile sheet tab */
+export function RankingPanelBody() {
   const neos = useStore((s) => s.neos);
   const select = useStore((s) => s.select);
   const selected = useStore((s) => s.selectedDesignation);
@@ -37,19 +50,18 @@ export function RankingPanel() {
   }, [neos, sort]);
 
   return (
-    <aside className="fixed top-20 right-6 w-[340px] panel text-xs flex flex-col"
-           style={{ maxHeight: "calc(100vh - 160px)" }}>
-      <div className="p-3 border-b border-rule">
+    <div className="text-xs flex flex-col h-full">
+      <div className="p-3 border-b border-rule flex-shrink-0">
         <div className="label-caps">mining targets <span className="text-warn">🜨 heuristic</span></div>
       </div>
-      <div className="grid grid-cols-[1fr_28px_44px_44px_44px] gap-x-2 px-3 py-1 text-dim border-b border-rule">
+      <div className="grid grid-cols-[1fr_28px_44px_44px_44px] gap-x-2 px-3 py-1 text-dim border-b border-rule flex-shrink-0">
         <Header label="designation" />
         <Header label="cls" onClick={() => setSort("class")} />
         <Header label="Δv" onClick={() => setSort("dv")} active={sort === "dv"} />
         <Header label="diam" onClick={() => setSort("diameter")} active={sort === "diameter"} />
         <Header label="score" onClick={() => setSort("score")} active={sort === "score"} />
       </div>
-      <div className="overflow-y-auto">
+      <div className="overflow-y-auto flex-1">
         {rows.slice(0, 200).map(({ n, dv, diameter, cls, score }) => {
           const active = n.designation === selected;
           return (
@@ -68,18 +80,18 @@ export function RankingPanel() {
           );
         })}
       </div>
-    </aside>
+    </div>
   );
 }
 
-function Header({ label, onClick, active }: { label: string; onClick?: () => void; active?: boolean }) {
+/** Desktop fixed-position panel — hidden on mobile */
+export function RankingPanel() {
   return (
-    <button
-      onClick={onClick}
-      className={`text-left ${active ? "text-accent" : "text-dim"} ${onClick ? "hover:text-fg" : ""}`}
-      disabled={!onClick}
+    <aside
+      className="fixed top-20 right-6 w-[340px] panel hidden md:flex flex-col"
+      style={{ maxHeight: "calc(100vh - 160px)" }}
     >
-      {label}
-    </button>
+      <RankingPanelBody />
+    </aside>
   );
 }

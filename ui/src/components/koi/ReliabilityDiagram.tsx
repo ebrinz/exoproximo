@@ -4,8 +4,11 @@ import { useStore } from "@/lib/store";
 import { useKoiStore } from "@/lib/koi-store";
 
 const N_BINS = 10;
+// Internal viewBox dimensions — SVG scales to fit container
+const VB_W = 720;
+const VB_H = 160;
 
-export function ReliabilityDiagram({ width = 720, height = 160 }: { width?: number; height?: number }) {
+export function ReliabilityDiagram() {
   const koi = useStore((s) => s.koi);
   const setHighlightedBin = useKoiStore((s) => s.setHighlightedBin);
   const highlightedBin = useKoiStore((s) => s.highlightedBin);
@@ -23,21 +26,26 @@ export function ReliabilityDiagram({ width = 720, height = 160 }: { width?: numb
   }, [koi]);
 
   const pad = 28;
-  const W = width - pad * 2;
-  const H = height - pad * 2;
+  const W = VB_W - pad * 2;
+  const H = VB_H - pad * 2;
   const x = (p: number) => pad + p * W;
   const y = (p: number) => pad + (1 - p) * H;
 
   return (
-    <div className="panel p-3" style={{ width }}>
+    <div className="panel p-3 w-full">
       <div className="label-caps mb-1">reliability diagram</div>
-      <svg width={width} height={height}>
+      <svg
+        viewBox={`0 0 ${VB_W} ${VB_H}`}
+        width="100%"
+        preserveAspectRatio="xMidYMid meet"
+        style={{ display: "block" }}
+      >
         {/* Ideal line y = x */}
         <line x1={x(0)} y1={y(0)} x2={x(1)} y2={y(1)} stroke="#1a2233" strokeDasharray="4,4" />
         {/* Axes */}
         <line x1={pad} y1={y(0)} x2={pad + W} y2={y(0)} stroke="#1a2233" />
         <line x1={pad} y1={y(0)} x2={pad} y2={y(1)} stroke="#1a2233" />
-        <text x={pad} y={height - 4} fill="#6b7385" fontSize="10">predicted</text>
+        <text x={pad} y={VB_H - 4} fill="#6b7385" fontSize="10">predicted</text>
         <text x={4} y={pad + 8} fill="#6b7385" fontSize="10">observed</text>
         {bins.map((b, i) => b.obs != null && (
           <g
