@@ -38,7 +38,10 @@ export const useStore = create<State>((set) => ({
   jd: jdNow(),
   playing: true,
   playSpeed: 30, // 1mo/s by default; the UI starts already animating
-  selectedDesignation: null,
+  // Default landing: 132 Aethra — large M-type metallic body, the
+  // catalog's headline metals candidate (Psyche analog, since Psyche
+  // itself is main-belt and not in the NEO catalog).
+  selectedDesignation: "132",
   hoverDesignation: null,
   neos: [],
   koi: [],

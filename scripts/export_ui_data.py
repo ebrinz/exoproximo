@@ -110,7 +110,7 @@ def _load_neos(conn) -> list[dict]:
             fallback_epoch_count += 1
         out.append({
             "designation": row.designation,
-            "name": row.name,
+            "name": _s(row.name),
             "elements": {
                 "a": float(row.a), "e": float(row.e), "i": float(row.i),
                 "om": float(row.om), "w": float(row.w), "ma": float(row.ma),
