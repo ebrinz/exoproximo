@@ -92,7 +92,7 @@ export function RankingPanel() {
   return (
     <aside
       className="fixed top-20 right-6 w-[340px] panel hidden md:flex flex-col"
-      style={{ maxHeight: "calc(100vh - 160px)" }}
+      style={{ height: "calc(100vh - 160px)" }}
     >
       <RankingPanelBody />
     </aside>
