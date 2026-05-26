@@ -1,6 +1,6 @@
 # Exoproximo UI
 
-Next.js 15 static-export app: 3D NEO belt explorer (`/`) and Kepler-FOV KOI map (`/exoplanets`).
+Next.js 15 static-export app: 3D Near-Earth Object explorer (`/`) and Kepler-FOV KOI map (`/exoplanets`).
 
 ## Develop
 

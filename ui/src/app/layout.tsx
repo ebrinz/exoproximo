@@ -8,7 +8,7 @@ const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "500", "600"], 
 const display = Space_Grotesk({ subsets: ["latin"], weight: ["500", "600"], variable: "--font-display" });
 
 export const metadata: Metadata = {
-  title: "Exoproximo · Belt Explorer",
+  title: "Exoproximo · Near-Earth Explorer",
   description: "NEO spectra, orbits, and Kepler candidates.",
 };
 

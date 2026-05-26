@@ -25,7 +25,7 @@ export function TopNav() {
         <span className="text-[10px]">v0.3</span>
       </div>
       <div className="pointer-events-auto flex gap-2">
-        {tab("/", "BELT")}
+        {tab("/", "NEAR-EARTH")}
         {tab("/exoplanets", "EXOPLANETS")}
       </div>
     </div>
