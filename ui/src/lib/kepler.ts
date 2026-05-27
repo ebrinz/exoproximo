@@ -67,3 +67,24 @@ export const EARTH_ELEMENTS: OrbitalElements = {
   om: 348.73936, w: 102.94719, ma: 357.51716,
   epoch: J2000, n: 0.9856474,
 };
+
+/** Mercury J2000 textbook elements. */
+export const MERCURY_ELEMENTS: OrbitalElements = {
+  a: 0.387099, e: 0.205630, i: 7.005,
+  om: 48.331, w: 29.124, ma: 174.796,
+  epoch: J2000, n: 4.092339,
+};
+
+/** Venus J2000 textbook elements. */
+export const VENUS_ELEMENTS: OrbitalElements = {
+  a: 0.723332, e: 0.006772, i: 3.39458,
+  om: 76.680, w: 54.884, ma: 50.115,
+  epoch: J2000, n: 1.602169,
+};
+
+/** Mars J2000 textbook elements. */
+export const MARS_ELEMENTS: OrbitalElements = {
+  a: 1.523679, e: 0.093400, i: 1.850,
+  om: 49.578, w: 286.502, ma: 19.412,
+  epoch: J2000, n: 0.524033,
+};

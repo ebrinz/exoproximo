@@ -10,6 +10,8 @@ import { SelectionHalo } from "./SelectionHalo";
 import { TrajectoryArc } from "./TrajectoryArc";
 import { CameraRig } from "./CameraRig";
 import { Sun } from "./Sun";
+import { Planets } from "./Planets";
+import { PlanetOrbits } from "./PlanetOrbits";
 
 export function Scene() {
   return (
@@ -19,12 +21,14 @@ export function Scene() {
       <ambientLight intensity={0.05} />
       <pointLight position={[0, 0, 0]} intensity={3} color="#fff5a0" />
       <Sun />
+      <PlanetOrbits />
       <EarthOrbit />
       <NeoOrbits />
       <NeoInstances />
       <SelectionHalo />
       <TrajectoryArc />
       <Earth />
+      <Planets />
       <OrbitControls makeDefault enableDamping dampingFactor={0.08} />
       <CameraRig />
     </Canvas>
